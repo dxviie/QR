@@ -1,2 +1,43 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+  import * as Card from "$lib/components/ui/card";
+  import QRCode from "$lib/components/QRCode.svelte";
+  import QRConfig from "$lib/components/QRConfig.svelte";
+</script>
+
+<div class="generator-layout">
+
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>QR Code</Card.Title>
+      <Card.Description></Card.Description>
+    </Card.Header>
+    <Card.Content>
+      <QRCode/>
+    </Card.Content>
+    <Card.Footer>
+    </Card.Footer>
+  </Card.Root>
+
+  <Card.Root>
+    <Card.Header>
+      <Card.Title>Configuration</Card.Title>
+      <Card.Description></Card.Description>
+    </Card.Header>
+    <Card.Content>
+      <QRConfig/>
+    </Card.Content>
+    <Card.Footer>
+    </Card.Footer>
+  </Card.Root>
+
+</div>
+
+<style>
+    .generator-layout {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-around;
+        align-items: center;
+        gap: 1rem;
+    }
+</style>
