@@ -2,6 +2,7 @@
   import * as Card from "$lib/components/ui/card";
   import QRCode from "$lib/components/QRCode.svelte";
   import QRConfig from "$lib/components/QRConfig.svelte";
+  import QROutput from "$lib/components/QROutput.svelte";
 </script>
 
 <div class="generator-layout">
@@ -30,6 +31,7 @@
     </Card.Footer>
   </Card.Root>
 
+  <QROutput/>
 </div>
 
 <style>

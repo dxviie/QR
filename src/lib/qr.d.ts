@@ -7,3 +7,9 @@ export interface QrConfig {
 	// horizontal & vertical blocks start from the full set of blocks
 	overlap: boolean;
 }
+
+export interface QrOutput {
+	svg: string;
+	totalPathLength: number;
+	remark: string;
+}

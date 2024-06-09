@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { QrConfig } from '$lib/qr';
+import type { QrConfig, QrOutput } from '$lib/qr';
 
 export const qrConfigStore = writable<QrConfig>({
 	value: 'https://qr.d17e.dev/',
@@ -8,4 +8,10 @@ export const qrConfigStore = writable<QrConfig>({
 	penMmSize: 0.8,
 	penTip: 'Round',
 	overlap: false
+});
+
+export const qrOutputStore = writable<QrOutput>({
+	svg: '',
+	totalPathLength: 0,
+	remark: ''
 });

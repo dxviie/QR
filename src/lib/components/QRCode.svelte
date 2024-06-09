@@ -2,7 +2,7 @@
 
   import paper from "paper";
   import {onMount} from "svelte";
-  import {qrConfigStore} from "$lib/components/qrStore";
+  import {qrConfigStore, qrOutputStore} from "$lib/components/qrStore";
   import type {QrConfig} from "$lib/qr";
 
   let canvas: HTMLCanvasElement;
@@ -62,6 +62,7 @@
       if (!config || !config.value) return;
       if (config.penMmSize <= 0) return;
       if (config.mmSize <= 0) return;
+      let warning;
       console.debug('::onFrame::', 'time', event.time, 'delta', event.delta, 'count', event.count, 'config', config);
       const items = project.activeLayer.getItems({});
       const width = config.mmSize * PAPERJS_MM_TO_PT;
@@ -261,15 +262,11 @@
         let penWidth = config.penMmSize * PAPERJS_MM_TO_PT;
         if (penWidth > targetBlockSize) {
           penWidth = targetBlockSize;
-          console.warn(
-            'Your pen width (',
-            penWidth,
-            ') is wider than the desired qr resolution (',
-            targetBlockSize,
-            '), your physical plot might not correspond to this output.'
-          );
+          warning = 'Your pen width (' + penWidth + ') is wider than the desired qr resolution (' + targetBlockSize + '), your physical plot might not correspond to this output.';
+          console.warn(warning);
         }
         const lines = Math.ceil(targetBlockSize / penWidth);
+        let totalLineLength = 0;
         let lineHeight = targetBlockSize / lines;
         if (lineHeight < 0) {
           lineHeight = targetBlockSize;
@@ -289,7 +286,7 @@
           const yStart = rectangle.bounds.y + penWidth / 2;
           for (let l = 0; l < lines - 1; l++) {
             const y = yStart + l * lineHeight;
-            new paper.Path.Line({
+            const lh = new paper.Path.Line({
               from: [rectangle.bounds.x + penWidth / 2, y],
               to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
               strokeColor: 'black',
@@ -297,10 +294,11 @@
               opacity: 0.5,
               strokeCap: strokeCap
             });
+            totalLineLength += lh.length;
           }
           // last line, start from bottom
           const y = rectangle.bounds.y + rectangle.bounds.height - penWidth / 2;
-          new paper.Path.Line({
+          const lh = new paper.Path.Line({
             from: [rectangle.bounds.x + penWidth / 2, y],
             to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
             strokeColor: 'black',
@@ -308,9 +306,10 @@
             opacity: 0.5,
             strokeCap: strokeCap
           });
+          totalLineLength += lh.length;
           if (lines > 1) {
             // add vertical lines at the ends
-            new paper.Path.Line({
+            const vle = new paper.Path.Line({
               from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
               to: [
                 rectangle.bounds.x + penWidth / 2,
@@ -321,7 +320,8 @@
               opacity: 0.5,
               strokeCap: strokeCap
             });
-            new paper.Path.Line({
+            totalLineLength += vle.length;
+            const vleb = new paper.Path.Line({
               from: [
                 rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
                 rectangle.bounds.y + penWidth / 2
@@ -335,6 +335,7 @@
               opacity: 0.5,
               strokeCap: strokeCap
             });
+            totalLineLength += vleb.length;
           }
           rectangle.remove();
         }
@@ -342,7 +343,7 @@
         for (const rectangle of verticalRectangles) {
           for (let l = 0; l < lines - 1; l++) {
             const x = rectangle.bounds.left + l * lineHeight + penWidth / 2;
-            new paper.Path.Line({
+            const lv = new paper.Path.Line({
               from: [x, rectangle.bounds.y + penWidth / 2],
               to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
               strokeColor: 'black',
@@ -350,10 +351,11 @@
               opacity: 0.5,
               strokeCap: strokeCap
             });
+            totalLineLength += lv.length;
           }
           // last line, start from right
           const x = rectangle.bounds.left + rectangle.bounds.width - penWidth / 2;
-          new paper.Path.Line({
+          const lv = new paper.Path.Line({
             from: [x, rectangle.bounds.y + penWidth / 2],
             to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
             strokeColor: 'black',
@@ -361,9 +363,10 @@
             opacity: 0.5,
             strokeCap: strokeCap
           });
+          totalLineLength += lv.length;
           if (lines > 1) {
             // add horizontal lines at the ends
-            new paper.Path.Line({
+            const lhe = new paper.Path.Line({
               from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
               to: [
                 rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
@@ -374,7 +377,8 @@
               opacity: 0.5,
               strokeCap: strokeCap
             });
-            new paper.Path.Line({
+            totalLineLength += lhe.length;
+            const lheb = new paper.Path.Line({
               from: [
                 rectangle.bounds.x + penWidth / 2,
                 rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
@@ -388,6 +392,7 @@
               opacity: 0.5,
               strokeCap: strokeCap
             });
+            totalLineLength += lheb.length;
           }
           rectangle.remove();
         }
@@ -397,8 +402,14 @@
         const projectSize = Math.max(project.activeLayer.bounds.width, project.activeLayer.bounds.height);
         const viewSize = Math.min(project.view.bounds.width, project.view.bounds.height) * 0.9;
         const ratio = viewSize / projectSize;
-        console.log('projectSize', projectSize, 'viewSize', viewSize, 'ratio', ratio);
         project.view.scale(ratio);
+        let exportedSvg = project.exportSVG({asString: true});
+        qrOutputStore.update(store => ({
+          ...store,
+          svg: exportedSvg,
+          totalPathLength: (totalLineLength / PAPERJS_MM_TO_PT).toFixed(2),
+          remark: warning
+        }));
       }
       project.view.pause();
     };
