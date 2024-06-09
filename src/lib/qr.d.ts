@@ -9,7 +9,7 @@ export interface QrConfig {
 }
 
 export interface QrOutput {
-	svg: string;
+	svg: string | SVGElement;
 	totalPathLength: number;
 	remark: string;
 }

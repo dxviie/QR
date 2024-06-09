@@ -62,7 +62,7 @@
       if (!config || !config.value) return;
       if (config.penMmSize <= 0) return;
       if (config.mmSize <= 0) return;
-      let warning;
+      let warning = '';
       console.debug('::onFrame::', 'time', event.time, 'delta', event.delta, 'count', event.count, 'config', config);
       const items = project.activeLayer.getItems({});
       const width = config.mmSize * PAPERJS_MM_TO_PT;
@@ -262,6 +262,7 @@
         let penWidth = config.penMmSize * PAPERJS_MM_TO_PT;
         if (penWidth > targetBlockSize) {
           penWidth = targetBlockSize;
+          // TODO verify this check & simpler warning message ? (pen too big!)
           warning = 'Your pen width (' + penWidth + ') is wider than the desired qr resolution (' + targetBlockSize + '), your physical plot might not correspond to this output.';
           console.warn(warning);
         }
@@ -401,13 +402,14 @@
         // // Get the bounds of the largest project layer
         const projectSize = Math.max(project.activeLayer.bounds.width, project.activeLayer.bounds.height);
         const viewSize = Math.min(project.view.bounds.width, project.view.bounds.height) * 0.9;
+        // TODO keep track of this scaling (un-scale at start maybe? so we can output SVG in mms)
         const ratio = viewSize / projectSize;
         project.view.scale(ratio);
         let exportedSvg = project.exportSVG({asString: true});
         qrOutputStore.update(store => ({
           ...store,
           svg: exportedSvg,
-          totalPathLength: (totalLineLength / PAPERJS_MM_TO_PT).toFixed(2),
+          totalPathLength: totalLineLength / PAPERJS_MM_TO_PT,
           remark: warning
         }));
       }
