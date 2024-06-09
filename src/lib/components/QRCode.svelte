@@ -46,14 +46,8 @@
   );
 
   const PAPERJS_MM_TO_PT = 3.775;
-  // const WIDTH = 100 * PAPERJS_MM_TO_PT;
-  // const HEIGHT = 100 * PAPERJS_MM_TO_PT;
-  // const PEN_WIDTH = PAPERJS_MM_TO_PT;
-  // const VIEW_SCALE = 10;
   const HOR_COLOR = 'orange';
   const VERT_COLOR = 'green';
-
-  // const ALLOW_OVERLAP = true;
 
   function hasBlockAt(blocks: paper.Path.Rectangle[], point: paper.PointLike): boolean {
     return blocks.some((block) => block.contains(point));
@@ -66,6 +60,8 @@
 
     project.view.onFrame = (event: { time: number; delta: number; count: number }) => {
       if (!config || !config.value) return;
+      if (config.penMmSize <= 0) return;
+      if (config.mmSize <= 0) return;
       console.debug('::onFrame::', 'time', event.time, 'delta', event.delta, 'count', event.count, 'config', config);
       const items = project.activeLayer.getItems({});
       const width = config.mmSize * PAPERJS_MM_TO_PT;
@@ -266,11 +262,11 @@
         if (penWidth > targetBlockSize) {
           penWidth = targetBlockSize;
           console.warn(
-            'penWidth (',
+            'Your pen width (',
             penWidth,
-            ') exceeds targetBlockSize (',
+            ') is wider than the desired qr resolution (',
             targetBlockSize,
-            '), setting to targetBlockSize'
+            '), your physical plot might not correspond to this output.'
           );
         }
         const lines = Math.ceil(targetBlockSize / penWidth);
@@ -397,7 +393,12 @@
         }
 
         project.activeLayer.position = project.view.center;
-        
+        // // Get the bounds of the largest project layer
+        const projectSize = Math.max(project.activeLayer.bounds.width, project.activeLayer.bounds.height);
+        const viewSize = Math.min(project.view.bounds.width, project.view.bounds.height) * 0.9;
+        const ratio = viewSize / projectSize;
+        console.log('projectSize', projectSize, 'viewSize', viewSize, 'ratio', ratio);
+        project.view.scale(ratio);
       }
       project.view.pause();
     };

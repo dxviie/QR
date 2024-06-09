@@ -5,7 +5,7 @@
   import {Checkbox} from "$lib/components/ui/checkbox";
   import {qrConfigStore} from "$lib/components/qrStore";
   import type {QrConfig} from "$lib/qr";
-  import type {CheckboxEvents} from "bits-ui";
+  import {onMount} from "svelte";
 
   // Subscribe to the store to get the initial values
   let qrConfig: QrConfig = {
@@ -13,11 +13,16 @@
     mmSize: 15,
     ecl: 'L',
     penMmSize: .8,
-    penTip: 'round',
+    penTip: 'Round',
     overlap: false
   };
+
   qrConfigStore.subscribe(value => {
     qrConfig = value;
+  });
+
+  onMount(() => {
+    qrConfigStore.update(() => (qrConfig));
   });
 
   // Event handlers to update the store
@@ -50,46 +55,56 @@
 
 </script>
 
-<div class="flex w-full max-w-sm flex-col gap-1.5">
-  <Label for="value">QR Text</Label>
-  <Input type="text" id="value" value={qrConfig.value} on:input={handleQrTextChange}/>
+<div class="flex w-full max-w-sm flex-col gap-2">
+  <div>
+    <Label for="value">QR Text</Label>
+    <Input type="text" id="value" value={qrConfig.value} on:input={handleQrTextChange}/>
+  </div>
 
-  <Label for="mmSize">QR Code Size (mm)</Label>
-  <Input type="number" id="mmSize" min="10" value={qrConfig.mmSize} on:input={handleMmSizeChange}/>
+  <div>
+    <Label for="mmSize">QR Code Size (mm)</Label>
+    <Input type="number" id="mmSize" min="10" value={qrConfig.mmSize} on:input={handleMmSizeChange}/>
+  </div>
 
-  <Label for="penMmSize">Pen Tip Size (mm)</Label>
-  <Input type="number" id="penMmSize" min="0.05" value={qrConfig.penMmSize} on:input={handlePenMmSizeChange}/>
+  <div>
+    <Label for="ecl">QR Error Correction Level</Label>
+    <Select.Root onSelectedChange={(event) => updateEcl(event.value)}>
+      <Select.Trigger>
+        {qrConfig.ecl}
+      </Select.Trigger>
+      <Select.Content id="ecl">
+        <Select.Item value="L">L</Select.Item>
+        <Select.Item value="M">M</Select.Item>
+        <Select.Item value="H">H</Select.Item>
+        <Select.Item value="Q">Q</Select.Item>
+      </Select.Content>
+    </Select.Root>
+  </div>
 
-  <Label for="penTip">Pen Tip</Label>
-  <Select.Root onSelectedChange={(event) => updatePenTip(event.value)}>
-    <Select.Trigger>
-      {qrConfig.penTip}
-    </Select.Trigger>
-    <Select.Content id="penTip">
-      <Select.Item value="Round">Round</Select.Item>
-      <Select.Item value="Square">Square</Select.Item>
-    </Select.Content>
-  </Select.Root>
+  <div>
+    <Label for="penMmSize">Pen Tip Size (mm)</Label>
+    <Input type="number" id="penMmSize" min="0.05" value={qrConfig.penMmSize} on:input={handlePenMmSizeChange}/>
+  </div>
 
-  <div class="flex items-center space-x-2">
+  <div>
+    <Label for="penTip">Pen Tip</Label>
+    <Select.Root onSelectedChange={(event) => updatePenTip(event.value)}>
+      <Select.Trigger>
+        {qrConfig.penTip}
+      </Select.Trigger>
+      <Select.Content id="penTip">
+        <Select.Item value="Round">Round</Select.Item>
+        <Select.Item value="Square">Square</Select.Item>
+      </Select.Content>
+    </Select.Root>
+  </div>
+
+  <div class="flex items-center space-x-2 mt-2">
     <Checkbox id="terms" aria-labelledby="terms-label" checked={qrConfig.overlap} onCheckedChange={(checked) => udpateOverlap(checked)}/>
     <Label id="overlap-label" for="overlap">
       Overlap Allowed
     </Label>
   </div>
-
-  <Label for="ecl">QR Error Correction Level</Label>
-  <Select.Root onSelectedChange={(event) => updateEcl(event.value)}>
-    <Select.Trigger>
-      {qrConfig.ecl}
-    </Select.Trigger>
-    <Select.Content id="ecl">
-      <Select.Item value="L">L</Select.Item>
-      <Select.Item value="M">M</Select.Item>
-      <Select.Item value="H">H</Select.Item>
-      <Select.Item value="Q">Q</Select.Item>
-    </Select.Content>
-  </Select.Root>
 </div>
 
 <style>
