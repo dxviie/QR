@@ -3,14 +3,17 @@
   import paper from "paper";
   import {onMount} from "svelte";
   import {qrConfigStore} from "$lib/components/qrStore";
+  import type {QrConfig} from "$lib/qr";
 
   let canvas: HTMLCanvasElement;
   let project: paper.Project;
 
-  let config = qrConfigStore.subscribe(
-    (value) => {
-      if (!project || !value || !value.value) return;
-      console.log('qrConfigStore', value);
+  let config: QrConfig | null = null;
+  qrConfigStore.subscribe(
+    (currentConfig) => {
+      if (!project || !currentConfig || !currentConfig.value) return;
+      config = currentConfig;
+      console.debug('current qr config', currentConfig);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
       import("qrcode-svg").then(({default: QRCode}) => {
@@ -19,13 +22,13 @@
          ************************************************************************/
           // Create a new QRCode
         const qr = new QRCode({
-            content: value.value,
+            content: currentConfig.value,
             padding: 0,
             width: 64,
             height: 64,
             color: '#000000',
             background: '#ffffff',
-            ecl: 'M', // L, M, H, Q,
+            ecl: currentConfig.ecl,
             join: false,
             predefined: false
           });
@@ -43,13 +46,14 @@
   );
 
   const PAPERJS_MM_TO_PT = 3.775;
-  const WIDTH = 100 * PAPERJS_MM_TO_PT;
-  const HEIGHT = 100 * PAPERJS_MM_TO_PT;
-  const PEN_WIDTH = PAPERJS_MM_TO_PT;
-  const VIEW_SCALE = 10;
+  // const WIDTH = 100 * PAPERJS_MM_TO_PT;
+  // const HEIGHT = 100 * PAPERJS_MM_TO_PT;
+  // const PEN_WIDTH = PAPERJS_MM_TO_PT;
+  // const VIEW_SCALE = 10;
   const HOR_COLOR = 'orange';
   const VERT_COLOR = 'green';
-  const ALLOW_OVERLAP = true; // horizontal & vertical blocks start from the full set of blocks
+
+  // const ALLOW_OVERLAP = true;
 
   function hasBlockAt(blocks: paper.Path.Rectangle[], point: paper.PointLike): boolean {
     return blocks.some((block) => block.contains(point));
@@ -61,8 +65,12 @@
     // project.view.scale(VIEW_SCALE);
 
     project.view.onFrame = (event: { time: number; delta: number; count: number }) => {
-      console.debug('::onFrame::', 'time', event.time, 'delta', event.delta, 'count', event.count);
+      if (!config || !config.value) return;
+      console.debug('::onFrame::', 'time', event.time, 'delta', event.delta, 'count', event.count, 'config', config);
       const items = project.activeLayer.getItems({});
+      const width = config.mmSize * PAPERJS_MM_TO_PT;
+      const height = config.mmSize * PAPERJS_MM_TO_PT;
+
       if (items.length > 0) {
         project.clear();
         console.debug('qr items loaded:', items.length);
@@ -70,7 +78,7 @@
         // Target size rectangle
         const targetRect = new paper.Path.Rectangle({
           from: [0, 0],
-          to: [WIDTH, HEIGHT],
+          to: [width, height],
           strokeColor: 'black',
           strokeWidth: 5
         });
@@ -124,7 +132,7 @@
          GROUPING BLOCKS HORIZONTALLY & VERTICALLY
          ************************************************************************/
 
-        const targetBlockSize = WIDTH / qrBlockDimensions;
+        const targetBlockSize = width / qrBlockDimensions;
         // In the first pass we group horizontally
         let startX = -1;
         let endX = -1;
@@ -187,7 +195,7 @@
         for (let x = 0; x < qrBlockDimensions; x++) {
           for (let y = 0; y < qrBlockDimensions; y++) {
             let hasBlock = false;
-            if (ALLOW_OVERLAP) {
+            if (config.overlap) {
               const point = new paper.Point(
                 x * qrBlockSize + qrBlockSize / 2,
                 y * qrBlockSize + qrBlockSize / 2
@@ -254,8 +262,8 @@
          DRAWING THE ACTUAL PLOTTABLE LINES
          ************************************************************************/
 
-        let penWidth = PEN_WIDTH;
-        if (PEN_WIDTH > targetBlockSize) {
+        let penWidth = config.penMmSize * PAPERJS_MM_TO_PT;
+        if (penWidth > targetBlockSize) {
           penWidth = targetBlockSize;
           console.warn(
             'penWidth (',
@@ -280,6 +288,7 @@
           'penWidth',
           penWidth
         );
+        const strokeCap = config.penTip === 'Round' ? 'round' : 'square';
         for (const rectangle of horizontalRectangles) {
           const yStart = rectangle.bounds.y + penWidth / 2;
           for (let l = 0; l < lines - 1; l++) {
@@ -290,7 +299,7 @@
               strokeColor: 'black',
               strokeWidth: penWidth,
               opacity: 0.5,
-              strokeCap: 'round'
+              strokeCap: strokeCap
             });
           }
           // last line, start from bottom
@@ -301,7 +310,7 @@
             strokeColor: 'black',
             strokeWidth: penWidth,
             opacity: 0.5,
-            strokeCap: 'round'
+            strokeCap: strokeCap
           });
           if (lines > 1) {
             // add vertical lines at the ends
@@ -314,7 +323,7 @@
               strokeColor: 'black',
               strokeWidth: penWidth,
               opacity: 0.5,
-              strokeCap: 'round'
+              strokeCap: strokeCap
             });
             new paper.Path.Line({
               from: [
@@ -328,7 +337,7 @@
               strokeColor: 'black',
               strokeWidth: penWidth,
               opacity: 0.5,
-              strokeCap: 'round'
+              strokeCap: strokeCap
             });
           }
           rectangle.remove();
@@ -343,7 +352,7 @@
               strokeColor: 'black',
               strokeWidth: penWidth,
               opacity: 0.5,
-              strokeCap: 'round'
+              strokeCap: strokeCap
             });
           }
           // last line, start from right
@@ -354,7 +363,7 @@
             strokeColor: 'black',
             strokeWidth: penWidth,
             opacity: 0.5,
-            strokeCap: 'round'
+            strokeCap: strokeCap
           });
           if (lines > 1) {
             // add horizontal lines at the ends
@@ -367,7 +376,7 @@
               strokeColor: 'black',
               strokeWidth: penWidth,
               opacity: 0.5,
-              strokeCap: 'round'
+              strokeCap: strokeCap
             });
             new paper.Path.Line({
               from: [
@@ -381,13 +390,14 @@
               strokeColor: 'black',
               strokeWidth: penWidth,
               opacity: 0.5,
-              strokeCap: 'round'
+              strokeCap: strokeCap
             });
           }
           rectangle.remove();
         }
 
         project.activeLayer.position = project.view.center;
+        
       }
       project.view.pause();
     };
