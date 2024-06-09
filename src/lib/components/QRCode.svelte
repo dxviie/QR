@@ -104,10 +104,10 @@
         const qrBlocks = rectangleMap.get(qrBlockSize) || [];
         rectangleMap.clear();
         for (const rectangle of bigBlocks) {
-          // rectangle.remove();
+          rectangle.remove();
         }
         for (const rectangle of qrBlocks) {
-          // rectangle.remove();
+          rectangle.remove();
         }
         console.debug(
           'qrFullSize',
@@ -181,212 +181,212 @@
           singleRectangles.length
         );
 
-        //     let startY = -1;
-        //     let endY = -1;
-        //     const verticalRectangles: paper.Path.Rectangle[] = [];
-        //     for (let x = 0; x < qrBlockDimensions; x++) {
-        //       for (let y = 0; y < qrBlockDimensions; y++) {
-        //         let hasBlock = false;
-        //         if (ALLOW_OVERLAP) {
-        //           const point = new paper.Point(
-        //             x * qrBlockSize + qrBlockSize / 2,
-        //             y * qrBlockSize + qrBlockSize / 2
-        //           );
-        //           hasBlock = hasBlockAt(qrBlocks, point);
-        //         } else {
-        //           const point = new paper.Point(
-        //             x * targetBlockSize + targetBlockSize / 2,
-        //             y * targetBlockSize + targetBlockSize / 2
-        //           );
-        //           hasBlock = hasBlockAt(singleRectangles, point);
-        //         }
-        //         if (hasBlock) {
-        //           if (startY < 0) startY = y;
-        //           endY = y;
-        //         } else {
-        //           if (startY >= 0 && endY >= 0) {
-        //             if (
-        //               startY !== endY ||
-        //               !hasBlockAt(horizontalRectangles, [
-        //                 x * targetBlockSize + targetBlockSize / 2,
-        //                 startY * targetBlockSize + targetBlockSize / 2
-        //               ])
-        //             ) {
-        //               const r = new paper.Path.Rectangle({
-        //                 from: [x * targetBlockSize, startY * targetBlockSize],
-        //                 to: [(x + 1) * targetBlockSize, (endY + 1) * targetBlockSize],
-        //                 fillColor: VERT_COLOR,
-        //                 opacity: 0.5
-        //               });
-        //               verticalRectangles.push(r);
-        //             }
-        //             startY = -1;
-        //             endY = -1;
-        //           }
-        //         }
-        //       }
-        //       if (startY >= 0 && endY >= 0) {
-        //         if (
-        //           startY !== endY ||
-        //           !hasBlockAt(horizontalRectangles, [
-        //             x * targetBlockSize + targetBlockSize / 2,
-        //             startY * targetBlockSize + targetBlockSize / 2
-        //           ])
-        //         ) {
-        //           const r = new paper.Path.Rectangle({
-        //             from: [x * targetBlockSize, startY * targetBlockSize],
-        //             to: [(x + 1) * targetBlockSize, (endY + 1) * targetBlockSize],
-        //             fillColor: VERT_COLOR,
-        //             opacity: 0.5
-        //           });
-        //           verticalRectangles.push(r);
-        //         }
-        //         startY = -1;
-        //         endY = -1;
-        //       }
-        //     }
-        //     console.debug('verticalRectangles', verticalRectangles.length);
-        //     singleRectangles.forEach((r) => r.remove());
-        //     singleRectangles.length = 0;
-        //     targetRect.remove();
-        //
-        //     /************************************************************************
-        //      DRAWING THE ACTUAL PLOTTABLE LINES
-        //      ************************************************************************/
-        //
-        //     let penWidth = PEN_WIDTH;
-        //     if (PEN_WIDTH > targetBlockSize) {
-        //       penWidth = targetBlockSize;
-        //       console.warn(
-        //         'penWidth (',
-        //         penWidth,
-        //         ') exceeds targetBlockSize (',
-        //         targetBlockSize,
-        //         '), setting to targetBlockSize'
-        //       );
-        //     }
-        //     const lines = Math.ceil(targetBlockSize / penWidth);
-        //     let lineHeight = targetBlockSize / lines;
-        //     if (lineHeight < 0) {
-        //       lineHeight = targetBlockSize;
-        //     }
-        //     console.log(
-        //       'lines',
-        //       lines,
-        //       'lineHeight',
-        //       lineHeight,
-        //       'targetBlockSize',
-        //       targetBlockSize,
-        //       'penWidth',
-        //       penWidth
-        //     );
-        //     for (const rectangle of horizontalRectangles) {
-        //       const yStart = rectangle.bounds.y + penWidth / 2;
-        //       for (let l = 0; l < lines - 1; l++) {
-        //         const y = yStart + l * lineHeight;
-        //         new paper.Path.Line({
-        //           from: [rectangle.bounds.x + penWidth / 2, y],
-        //           to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
-        //           strokeColor: 'black',
-        //           strokeWidth: penWidth,
-        //           opacity: 0.5,
-        //           strokeCap: 'round'
-        //         });
-        //       }
-        //       // last line, start from bottom
-        //       const y = rectangle.bounds.y + rectangle.bounds.height - penWidth / 2;
-        //       new paper.Path.Line({
-        //         from: [rectangle.bounds.x + penWidth / 2, y],
-        //         to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
-        //         strokeColor: 'black',
-        //         strokeWidth: penWidth,
-        //         opacity: 0.5,
-        //         strokeCap: 'round'
-        //       });
-        //       if (lines > 1) {
-        //         // add vertical lines at the ends
-        //         new paper.Path.Line({
-        //           from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
-        //           to: [
-        //             rectangle.bounds.x + penWidth / 2,
-        //             rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-        //           ],
-        //           strokeColor: 'black',
-        //           strokeWidth: penWidth,
-        //           opacity: 0.5,
-        //           strokeCap: 'round'
-        //         });
-        //         new paper.Path.Line({
-        //           from: [
-        //             rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-        //             rectangle.bounds.y + penWidth / 2
-        //           ],
-        //           to: [
-        //             rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-        //             rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-        //           ],
-        //           strokeColor: 'black',
-        //           strokeWidth: penWidth,
-        //           opacity: 0.5,
-        //           strokeCap: 'round'
-        //         });
-        //       }
-        //       rectangle.remove();
-        //     }
-        //
-        //     for (const rectangle of verticalRectangles) {
-        //       for (let l = 0; l < lines - 1; l++) {
-        //         const x = rectangle.bounds.left + l * lineHeight + penWidth / 2;
-        //         new paper.Path.Line({
-        //           from: [x, rectangle.bounds.y + penWidth / 2],
-        //           to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
-        //           strokeColor: 'black',
-        //           strokeWidth: penWidth,
-        //           opacity: 0.5,
-        //           strokeCap: 'round'
-        //         });
-        //       }
-        //       // last line, start from right
-        //       const x = rectangle.bounds.left + rectangle.bounds.width - penWidth / 2;
-        //       new paper.Path.Line({
-        //         from: [x, rectangle.bounds.y + penWidth / 2],
-        //         to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
-        //         strokeColor: 'black',
-        //         strokeWidth: penWidth,
-        //         opacity: 0.5,
-        //         strokeCap: 'round'
-        //       });
-        //       if (lines > 1) {
-        //         // add horizontal lines at the ends
-        //         new paper.Path.Line({
-        //           from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
-        //           to: [
-        //             rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-        //             rectangle.bounds.y + penWidth / 2
-        //           ],
-        //           strokeColor: 'black',
-        //           strokeWidth: penWidth,
-        //           opacity: 0.5,
-        //           strokeCap: 'round'
-        //         });
-        //         new paper.Path.Line({
-        //           from: [
-        //             rectangle.bounds.x + penWidth / 2,
-        //             rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-        //           ],
-        //           to: [
-        //             rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-        //             rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-        //           ],
-        //           strokeColor: 'black',
-        //           strokeWidth: penWidth,
-        //           opacity: 0.5,
-        //           strokeCap: 'round'
-        //         });
-        //       }
-        //       rectangle.remove();
-        //     }
-        //
+        let startY = -1;
+        let endY = -1;
+        const verticalRectangles: paper.Path.Rectangle[] = [];
+        for (let x = 0; x < qrBlockDimensions; x++) {
+          for (let y = 0; y < qrBlockDimensions; y++) {
+            let hasBlock = false;
+            if (ALLOW_OVERLAP) {
+              const point = new paper.Point(
+                x * qrBlockSize + qrBlockSize / 2,
+                y * qrBlockSize + qrBlockSize / 2
+              );
+              hasBlock = hasBlockAt(qrBlocks, point);
+            } else {
+              const point = new paper.Point(
+                x * targetBlockSize + targetBlockSize / 2,
+                y * targetBlockSize + targetBlockSize / 2
+              );
+              hasBlock = hasBlockAt(singleRectangles, point);
+            }
+            if (hasBlock) {
+              if (startY < 0) startY = y;
+              endY = y;
+            } else {
+              if (startY >= 0 && endY >= 0) {
+                if (
+                  startY !== endY ||
+                  !hasBlockAt(horizontalRectangles, [
+                    x * targetBlockSize + targetBlockSize / 2,
+                    startY * targetBlockSize + targetBlockSize / 2
+                  ])
+                ) {
+                  const r = new paper.Path.Rectangle({
+                    from: [x * targetBlockSize, startY * targetBlockSize],
+                    to: [(x + 1) * targetBlockSize, (endY + 1) * targetBlockSize],
+                    fillColor: VERT_COLOR,
+                    opacity: 0.5
+                  });
+                  verticalRectangles.push(r);
+                }
+                startY = -1;
+                endY = -1;
+              }
+            }
+          }
+          if (startY >= 0 && endY >= 0) {
+            if (
+              startY !== endY ||
+              !hasBlockAt(horizontalRectangles, [
+                x * targetBlockSize + targetBlockSize / 2,
+                startY * targetBlockSize + targetBlockSize / 2
+              ])
+            ) {
+              const r = new paper.Path.Rectangle({
+                from: [x * targetBlockSize, startY * targetBlockSize],
+                to: [(x + 1) * targetBlockSize, (endY + 1) * targetBlockSize],
+                fillColor: VERT_COLOR,
+                opacity: 0.5
+              });
+              verticalRectangles.push(r);
+            }
+            startY = -1;
+            endY = -1;
+          }
+        }
+        console.debug('verticalRectangles', verticalRectangles.length);
+        singleRectangles.forEach((r) => r.remove());
+        singleRectangles.length = 0;
+        targetRect.remove();
+
+        /************************************************************************
+         DRAWING THE ACTUAL PLOTTABLE LINES
+         ************************************************************************/
+
+        let penWidth = PEN_WIDTH;
+        if (PEN_WIDTH > targetBlockSize) {
+          penWidth = targetBlockSize;
+          console.warn(
+            'penWidth (',
+            penWidth,
+            ') exceeds targetBlockSize (',
+            targetBlockSize,
+            '), setting to targetBlockSize'
+          );
+        }
+        const lines = Math.ceil(targetBlockSize / penWidth);
+        let lineHeight = targetBlockSize / lines;
+        if (lineHeight < 0) {
+          lineHeight = targetBlockSize;
+        }
+        console.log(
+          'lines',
+          lines,
+          'lineHeight',
+          lineHeight,
+          'targetBlockSize',
+          targetBlockSize,
+          'penWidth',
+          penWidth
+        );
+        for (const rectangle of horizontalRectangles) {
+          const yStart = rectangle.bounds.y + penWidth / 2;
+          for (let l = 0; l < lines - 1; l++) {
+            const y = yStart + l * lineHeight;
+            new paper.Path.Line({
+              from: [rectangle.bounds.x + penWidth / 2, y],
+              to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
+              strokeColor: 'black',
+              strokeWidth: penWidth,
+              opacity: 0.5,
+              strokeCap: 'round'
+            });
+          }
+          // last line, start from bottom
+          const y = rectangle.bounds.y + rectangle.bounds.height - penWidth / 2;
+          new paper.Path.Line({
+            from: [rectangle.bounds.x + penWidth / 2, y],
+            to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
+            strokeColor: 'black',
+            strokeWidth: penWidth,
+            opacity: 0.5,
+            strokeCap: 'round'
+          });
+          if (lines > 1) {
+            // add vertical lines at the ends
+            new paper.Path.Line({
+              from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
+              to: [
+                rectangle.bounds.x + penWidth / 2,
+                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
+              ],
+              strokeColor: 'black',
+              strokeWidth: penWidth,
+              opacity: 0.5,
+              strokeCap: 'round'
+            });
+            new paper.Path.Line({
+              from: [
+                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
+                rectangle.bounds.y + penWidth / 2
+              ],
+              to: [
+                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
+                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
+              ],
+              strokeColor: 'black',
+              strokeWidth: penWidth,
+              opacity: 0.5,
+              strokeCap: 'round'
+            });
+          }
+          rectangle.remove();
+        }
+
+        for (const rectangle of verticalRectangles) {
+          for (let l = 0; l < lines - 1; l++) {
+            const x = rectangle.bounds.left + l * lineHeight + penWidth / 2;
+            new paper.Path.Line({
+              from: [x, rectangle.bounds.y + penWidth / 2],
+              to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
+              strokeColor: 'black',
+              strokeWidth: penWidth,
+              opacity: 0.5,
+              strokeCap: 'round'
+            });
+          }
+          // last line, start from right
+          const x = rectangle.bounds.left + rectangle.bounds.width - penWidth / 2;
+          new paper.Path.Line({
+            from: [x, rectangle.bounds.y + penWidth / 2],
+            to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
+            strokeColor: 'black',
+            strokeWidth: penWidth,
+            opacity: 0.5,
+            strokeCap: 'round'
+          });
+          if (lines > 1) {
+            // add horizontal lines at the ends
+            new paper.Path.Line({
+              from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
+              to: [
+                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
+                rectangle.bounds.y + penWidth / 2
+              ],
+              strokeColor: 'black',
+              strokeWidth: penWidth,
+              opacity: 0.5,
+              strokeCap: 'round'
+            });
+            new paper.Path.Line({
+              from: [
+                rectangle.bounds.x + penWidth / 2,
+                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
+              ],
+              to: [
+                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
+                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
+              ],
+              strokeColor: 'black',
+              strokeWidth: penWidth,
+              opacity: 0.5,
+              strokeCap: 'round'
+            });
+          }
+          rectangle.remove();
+        }
+
         project.activeLayer.position = project.view.center;
       }
       project.view.pause();
