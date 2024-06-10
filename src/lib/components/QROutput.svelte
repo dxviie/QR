@@ -1,7 +1,8 @@
 <script lang="ts">
 
-  import {qrOutputStore} from "$lib/components/qrStore";
+  import {qrOutputStore} from "$lib/qrStore";
   import {Button} from "$lib/components/ui/button";
+  import {toast} from "svelte-sonner";
 
   let qrOutput = {
     svg: '',
@@ -13,15 +14,28 @@
     qrOutput = value;
   });
 
-  const downloadSVG = () => {
+  const downloadSVG = async () => {
     const svg = qrOutput.svg;
     const blob = new Blob([svg], {type: 'image/svg+xml'});
     const url = URL.createObjectURL(blob);
+
+    // Create an invisible anchor element
     const a = document.createElement('a');
+    a.style.display = 'none';
     a.href = url;
-    a.download = 'qr-code.svg';
+    a.download = 'd17e.dev-plottable-qr-code.svg';
+
+    // Append it to the document
+    document.body.appendChild(a);
+
+    // Trigger a click event on the anchor
     a.click();
+
+    // Clean up
     URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+
+    toast.success('SVG downloaded');
   }
 </script>
 

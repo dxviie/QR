@@ -1,13 +1,33 @@
 <script>
     import '../app.css';
+    import {Toaster} from "$lib/components/ui/sonner";
+    import {ModeWatcher} from "mode-watcher";
+    import {toggleMode} from "mode-watcher";
+    import {Button} from "$lib/components/ui/button";
+    import {Moon, Sun} from "lucide-svelte";
+    import {Label} from "$lib/components/ui/label";
 </script>
 
 <div class="app-container">
-  <header>Plottable QR Code Generator</header>
+  <header>
+    <Label>Plottable QR Code Generator</Label>
+    <Button on:click={toggleMode} variant="outline" size="icon">
+      <Sun
+              class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+      />
+      <Moon
+              class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+      />
+      <span class="sr-only">Toggle theme</span>
+    </Button>
+  </header>
   <main>
     <slot></slot>
   </main>
-  <footer></footer>
+  <footer>
+    <ModeWatcher/>
+    <Toaster/>
+  </footer>
 </div>
 
 <style>
@@ -19,10 +39,7 @@
     }
 
     header {
-        background-color: #333;
-        color: white;
         padding: 1rem;
-        font-size: xx-large;
         display: flex;
         flex-direction: row;
         justify-content: center;
@@ -37,8 +54,6 @@
     }
 
     footer {
-        background-color: #333;
-        color: white;
         padding: 1rem;
     }
 </style>

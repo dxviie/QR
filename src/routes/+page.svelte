@@ -3,7 +3,7 @@
   import QRCode from "$lib/components/QRCode.svelte";
   import QRConfig from "$lib/components/QRConfig.svelte";
   import QROutput from "$lib/components/QROutput.svelte";
-  import {qrOutputStore} from "$lib/components/qrStore";
+  import {qrOutputStore} from "$lib/qrStore";
 
   let qrOutput = {
     svg: '',

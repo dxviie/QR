@@ -2,11 +2,12 @@
 
   import paper from "paper";
   import {onMount} from "svelte";
-  import {qrConfigStore, qrOutputStore} from "$lib/components/qrStore";
+  import {qrConfigStore, qrOutputStore} from "$lib/qrStore";
   import type {QrConfig} from "$lib/qr";
 
   let canvas: HTMLCanvasElement;
   let project: paper.Project;
+  let zoom = 1;
 
   let config: QrConfig | null = null;
   qrConfigStore.subscribe(
@@ -56,14 +57,22 @@
   onMount(() => {
     paper.setup(canvas);
     project = paper.project;
-    // project.view.scale(VIEW_SCALE);
 
     project.view.onFrame = (event: { time: number; delta: number; count: number }) => {
-      if (!config || !config.value) return;
-      if (config.penMmSize <= 0) return;
-      if (config.mmSize <= 0) return;
+      if (!config || !config.value || config.penMmSize <= 0 || config.mmSize <= 0) {
+        qrOutputStore.update(() => ({
+          svg: '',
+          totalPathLength: 0,
+          remark: 'Invalid configuration'
+        }));
+        return;
+      }
       let warning = '';
       console.debug('::onFrame::', 'time', event.time, 'delta', event.delta, 'count', event.count, 'config', config);
+      if (zoom !== 1) {
+        project.view.scale(1 / zoom);
+        zoom = 1;
+      }
       const items = project.activeLayer.getItems({});
       const width = config.mmSize * PAPERJS_MM_TO_PT;
       const height = config.mmSize * PAPERJS_MM_TO_PT;
@@ -402,10 +411,9 @@
         // // Get the bounds of the largest project layer
         const projectSize = Math.max(project.activeLayer.bounds.width, project.activeLayer.bounds.height);
         const viewSize = Math.min(project.view.bounds.width, project.view.bounds.height) * 0.9;
-        // TODO keep track of this scaling (un-scale at start maybe? so we can output SVG in mms)
-        const ratio = viewSize / projectSize;
-        project.view.scale(ratio);
         let exportedSvg = project.exportSVG({asString: true});
+        zoom = viewSize / projectSize;
+        project.view.scale(zoom);
         qrOutputStore.update(store => ({
           ...store,
           svg: exportedSvg,
@@ -425,5 +433,7 @@
         display: block;
         width: calc(100vw - 42rem);
         aspect-ratio: 1;
+        background-color: white;
+        border-radius: 1.5rem;
     }
 </style>
