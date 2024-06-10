@@ -434,6 +434,6 @@
         width: calc(100vw - 42rem);
         aspect-ratio: 1;
         background-color: white;
-        border-radius: 1.5rem;
+        border-radius: .5rem;
     }
 </style>
