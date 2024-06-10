@@ -48,7 +48,7 @@
     {/if}
     {#if qrOutput.totalPathLength}
       <div>
-        <label for="totalPathLength">Total Path Length: {qrOutput.totalPathLength.toFixed(2)} mm </label>
+        <label for="totalPathLength">Total Path Length =~ {qrOutput.totalPathLength.toFixed(0)} mm </label>
       </div>
     {/if}
   </div>
