@@ -1,6 +1,7 @@
 <script lang="ts">
 
   import {qrOutputStore} from "$lib/components/qrStore";
+  import {Button} from "$lib/components/ui/button";
 
   let qrOutput = {
     svg: '',
@@ -11,17 +12,30 @@
   qrOutputStore.subscribe(value => {
     qrOutput = value;
   });
+
+  const downloadSVG = () => {
+    const svg = qrOutput.svg;
+    const blob = new Blob([svg], {type: 'image/svg+xml'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'qr-code.svg';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
 </script>
 
 <div>
   <div class="flex flex-col gap-2">
-    <div>
-      <label for="remark">Remark</label>
-      <textarea id="remark" rows="10" cols="50" readonly>{qrOutput.remark}</textarea>
-    </div>
-    <div>
-      <label for="totalPathLength">Total Path Length</label>
-      <input type="text" id="totalPathLength" value={qrOutput.totalPathLength} readonly>
-    </div>
+    {#if qrOutput.svg}
+      <div>
+        <Button on:click={downloadSVG}>Download SVG</Button>
+      </div>
+    {/if}
+    {#if qrOutput.totalPathLength}
+      <div>
+        <label for="totalPathLength">Total Path Length: {qrOutput.totalPathLength.toFixed(2)} mm </label>
+      </div>
+    {/if}
   </div>
 </div>

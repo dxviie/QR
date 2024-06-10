@@ -261,9 +261,9 @@
 
         let penWidth = config.penMmSize * PAPERJS_MM_TO_PT;
         if (penWidth > targetBlockSize) {
-          penWidth = targetBlockSize;
           // TODO verify this check & simpler warning message ? (pen too big!)
-          warning = 'Your pen width (' + penWidth + ') is wider than the desired qr resolution (' + targetBlockSize + '), your physical plot might not correspond to this output.';
+          warning = 'Your pen is too big (' + config.penMmSize + ' mm > ' + (targetBlockSize / PAPERJS_MM_TO_PT).toFixed(2) + ' mm). The physical plot might look different.';
+          penWidth = targetBlockSize;
           console.warn(warning);
         }
         const lines = Math.ceil(targetBlockSize / penWidth);
