@@ -83,7 +83,7 @@
 
   <div>
     <Label for="penMmSize">Pen Tip Size (mm)</Label>
-    <Input type="number" id="penMmSize" min="0.05" value={qrConfig.penMmSize} on:input={handlePenMmSizeChange}/>
+    <Input type="number" id="penMmSize" min="0.05" step="0.05" value={qrConfig.penMmSize} on:input={handlePenMmSizeChange}/>
   </div>
 
   <div>
