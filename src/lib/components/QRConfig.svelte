@@ -58,12 +58,12 @@
 <div class="flex w-full max-w-sm flex-col gap-2">
   <div>
     <Label for="value">QR Text</Label>
-    <Input type="text" id="value" value={qrConfig.value} on:input={handleQrTextChange}/>
+    <Input type="text" id="value" value={qrConfig.value} on:change={handleQrTextChange}/>
   </div>
 
   <div>
-    <Label for="mmSize">QR Code Size (mm)</Label>
-    <Input type="number" id="mmSize" min="10" value={qrConfig.mmSize} on:input={handleMmSizeChange}/>
+    <Label for="mmSize">QR Code Size (10 - 500 mm)</Label>
+    <Input type="number" id="mmSize" min="10" max="500" value={qrConfig.mmSize} on:change={handleMmSizeChange}/>
   </div>
 
   <div>
@@ -82,8 +82,8 @@
   </div>
 
   <div>
-    <Label for="penMmSize">Pen Tip Size (mm)</Label>
-    <Input type="number" id="penMmSize" min="0.05" step="0.05" value={qrConfig.penMmSize} on:input={handlePenMmSizeChange}/>
+    <Label for="penMmSize">Pen Tip Size (>0.05 mm)</Label>
+    <Input type="number" id="penMmSize" min="0.05" step="0.05" value={qrConfig.penMmSize} on:change={handlePenMmSizeChange}/>
   </div>
 
   <div>
@@ -106,22 +106,3 @@
     </Label>
   </div>
 </div>
-
-<style>
-    /* Add your styles here */
-    .flex {
-        display: flex;
-    }
-
-    .w-full {
-        width: 100%;
-    }
-
-    .max-w-sm {
-        max-width: 20rem;
-    }
-
-    .flex-col {
-        flex-direction: column;
-    }
-</style>

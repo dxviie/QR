@@ -14,6 +14,7 @@
     (currentConfig) => {
       if (!project || !currentConfig || !currentConfig.value) return;
       config = currentConfig;
+
       console.debug('current qr config', currentConfig);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-expect-error
@@ -38,10 +39,18 @@
         const svg = qr.svg();
         console.debug('qr svg:', svg);
         project.clear();
-        project.importSVG(svg);
-
         project.view.play();
-        console.debug('project refresh requested');
+        qrOutputStore.update(store => ({
+          ...store,
+          totalPathLength: 0,
+          remark: 'rendering'
+        }));
+
+        setTimeout(() => {
+          project.importSVG(svg);
+          project.view.play();
+          console.debug('project refresh requested');
+        }, 0);
       });
     }
   );
@@ -270,7 +279,6 @@
 
         let penWidth = config.penMmSize * PAPERJS_MM_TO_PT;
         if (penWidth > targetBlockSize) {
-          // TODO verify this check & simpler warning message ? (pen too big!)
           warning = 'Your pen is too big (' + config.penMmSize + ' mm > ' + (targetBlockSize / PAPERJS_MM_TO_PT).toFixed(2) + ' mm). The physical plot might look different.';
           penWidth = targetBlockSize;
           console.warn(warning);
@@ -281,7 +289,7 @@
         if (lineHeight < 0) {
           lineHeight = targetBlockSize;
         }
-        console.log(
+        console.debug(
           'lines',
           lines,
           'lineHeight',
