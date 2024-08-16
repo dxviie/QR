@@ -22,7 +22,7 @@
   <p class="intro">
     Looks cute, but not really a success...<br/><br/>
     That's when I thought I could solve this problem once and for all. For everybody. Forever.<br/>
-    This is exactly an attempt at that.<br/><br/>
+    And this is my attempt.<br/><br/>
     The code is currently not public, but will probably be soon after some cleaning
     up.
     In case you have some ideas, feedback or just want to say hi, please do <a href="https://forms.d17e.dev/contact" target="_blank">get
