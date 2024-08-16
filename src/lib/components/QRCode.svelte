@@ -443,7 +443,7 @@
 <style>
     #qr-canvas {
         display: block;
-        width: 100%;
+        width: calc(100vw - 42rem);
         max-width: 50rem;
         aspect-ratio: 1;
         background-color: white;
