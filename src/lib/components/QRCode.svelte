@@ -279,9 +279,13 @@
 
         let penWidth = config.penMmSize * PAPERJS_MM_TO_PT;
         if (penWidth > targetBlockSize) {
-          warning = 'Your pen is too big (' + config.penMmSize + ' mm > ' + (targetBlockSize / PAPERJS_MM_TO_PT).toFixed(2) + ' mm). The physical plot might look different.';
+          const penMMDisplay = config.penMmSize;
+          const targetMMDisplay = (targetBlockSize / PAPERJS_MM_TO_PT).toFixed(2);
+          if ((penMMDisplay - (targetBlockSize / PAPERJS_MM_TO_PT)) > 0.05) {
+            warning = 'Your pen is too big (' + penMMDisplay + ' mm > ' + targetMMDisplay + ' mm). The physical plot might look different.';
+            console.warn(warning);
+          }
           penWidth = targetBlockSize;
-          console.warn(warning);
         }
         const lines = Math.ceil(targetBlockSize / penWidth);
         let totalLineLength = 0;
@@ -309,7 +313,7 @@
               to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
               strokeColor: 'black',
               strokeWidth: penWidth,
-              opacity: 0.5,
+              opacity: config?.transparent ? 0.5 : 1,
               strokeCap: strokeCap
             });
             totalLineLength += lh.length;
@@ -321,7 +325,7 @@
             to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
             strokeColor: 'black',
             strokeWidth: penWidth,
-            opacity: 0.5,
+            opacity: config?.transparent ? 0.5 : 1,
             strokeCap: strokeCap
           });
           totalLineLength += lh.length;
@@ -335,7 +339,7 @@
               ],
               strokeColor: 'black',
               strokeWidth: penWidth,
-              opacity: 0.5,
+              opacity: config?.transparent ? 0.5 : 1,
               strokeCap: strokeCap
             });
             totalLineLength += vle.length;
@@ -350,7 +354,7 @@
               ],
               strokeColor: 'black',
               strokeWidth: penWidth,
-              opacity: 0.5,
+              opacity: config?.transparent ? 0.5 : 1,
               strokeCap: strokeCap
             });
             totalLineLength += vleb.length;
@@ -366,7 +370,7 @@
               to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
               strokeColor: 'black',
               strokeWidth: penWidth,
-              opacity: 0.5,
+              opacity: config?.transparent ? 0.5 : 1,
               strokeCap: strokeCap
             });
             totalLineLength += lv.length;
@@ -378,7 +382,7 @@
             to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
             strokeColor: 'black',
             strokeWidth: penWidth,
-            opacity: 0.5,
+            opacity: config?.transparent ? 0.5 : 1,
             strokeCap: strokeCap
           });
           totalLineLength += lv.length;
@@ -407,7 +411,7 @@
               ],
               strokeColor: 'black',
               strokeWidth: penWidth,
-              opacity: 0.5,
+              opacity: config?.transparent ? 0.5 : 1,
               strokeCap: strokeCap
             });
             totalLineLength += lheb.length;
@@ -443,5 +447,11 @@
         aspect-ratio: 1;
         background-color: white;
         border-radius: .5rem;
+    }
+
+    @media (max-width: 850px) {
+        #qr-canvas {
+            width: 100%;
+        }
     }
 </style>

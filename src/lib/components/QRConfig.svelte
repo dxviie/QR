@@ -12,9 +12,10 @@
     value: 'https://qr.d17e.dev/',
     mmSize: 15,
     ecl: 'L',
-    penMmSize: .8,
+    penMmSize: .5,
     penTip: 'Round',
-    overlap: false
+    overlap: false,
+    transparent: false
   };
 
   qrConfigStore.subscribe(value => {
@@ -25,32 +26,56 @@
     qrConfigStore.update(() => (qrConfig));
   });
 
-  // Event handlers to update the store
+  function debounce<T extends (...args: any[]) => void>(func: T, delay: number): T {
+    let timeoutId: ReturnType<typeof setTimeout>;
+
+    return function (this: any, ...args: Parameters<T>) {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => func.apply(this, args), delay);
+    } as T;
+  }
+
+  type UpdateFunction<T> = (value: Partial<T>) => void;
+
+  function createDebouncedUpdate<T>(delay: number = 500): UpdateFunction<T> {
+    return debounce((value: Partial<T>) => {
+      qrConfigStore.update(store => ({...store, ...value}));
+    }, delay);
+  }
+
+  // Create debounced update function
+  const debouncedUpdate = createDebouncedUpdate<QrConfig>();
+
+  // Event handlers
   function handleQrTextChange(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    qrConfigStore.update(store => ({...store, value: inputElement.value}));
+    const value = (event.target as HTMLInputElement).value;
+    debouncedUpdate({value});
   }
 
   function handleMmSizeChange(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    qrConfigStore.update(store => ({...store, mmSize: Number(inputElement.value)}));
+    const mmSize = Number((event.target as HTMLInputElement).value);
+    debouncedUpdate({mmSize});
   }
 
   function updateEcl(ecl: string) {
-    qrConfigStore.update(store => ({...store, ecl: ecl}));
+    debouncedUpdate({ecl});
   }
 
   function handlePenMmSizeChange(event: Event) {
-    const inputElement = event.target as HTMLInputElement;
-    qrConfigStore.update(store => ({...store, penMmSize: Number(inputElement.value)}));
+    const penMmSize = Number((event.target as HTMLInputElement).value);
+    debouncedUpdate({penMmSize});
   }
 
   function updatePenTip(penTip: string) {
-    qrConfigStore.update(store => ({...store, penTip: penTip}));
+    debouncedUpdate({penTip});
   }
 
-  function udpateOverlap(overlap: boolean) {
-    qrConfigStore.update(store => ({...store, overlap: overlap}));
+  function updateOverlap(overlap: boolean) {
+    debouncedUpdate({overlap});
+  }
+
+  function updateTransparent(transparent: boolean) {
+    debouncedUpdate({transparent});
   }
 
 </script>
@@ -99,10 +124,19 @@
     </Select.Root>
   </div>
 
-  <div class="flex items-center space-x-2 mt-2">
-    <Checkbox id="terms" aria-labelledby="terms-label" checked={qrConfig.overlap} onCheckedChange={(checked) => udpateOverlap(checked)}/>
-    <Label id="overlap-label" for="overlap">
-      Overlap Allowed
-    </Label>
+  <div class="flex flex-col items-baseline gap-1.5 space-x-2 mt-2">
+    <div>
+      <Checkbox id="terms" aria-labelledby="terms-label" checked={qrConfig.overlap} onCheckedChange={(checked) => updateOverlap(checked)}/>
+      <Label id="overlap-label" for="overlap">
+        Overlap Allowed
+      </Label>
+    </div>
+    <div>
+      <Checkbox id="transparent" aria-labelledby="transparent-label" checked={qrConfig.transparent}
+                onCheckedChange={(checked) => updateTransparent(checked)}/>
+      <Label id="transparent-label" for="transparent">
+        Transparent Lines
+      </Label>
+    </div>
   </div>
 </div>

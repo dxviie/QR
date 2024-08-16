@@ -5,9 +5,10 @@ export const qrConfigStore = writable<QrConfig>({
 	value: 'https://qr.d17e.dev/',
 	mmSize: 15,
 	ecl: 'L',
-	penMmSize: 0.5,
+	penMmSize: 0.6,
 	penTip: 'Round',
-	overlap: false
+	overlap: true,
+	transparent: true
 });
 
 export const qrOutputStore = writable<QrOutput>({

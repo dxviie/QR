@@ -1,83 +1,76 @@
 <script lang="ts">
-  import * as Card from "$lib/components/ui/card";
-  import QRCode from "$lib/components/QRCode.svelte";
-  import QRConfig from "$lib/components/QRConfig.svelte";
-  import QROutput from "$lib/components/QROutput.svelte";
-  import {qrOutputStore} from "$lib/qrStore";
-
-  let qrOutput = {
-    svg: '',
-    remark: '',
-    totalPathLength: 0
-  }
-
-  qrOutputStore.subscribe(value => {
-    qrOutput = value;
-  });
+  import {Button} from "$lib/components/ui/button";
 </script>
 
-<div class="generator-layout">
+<div class="content">
 
-  <Card.Root>
-    <Card.Header>
-      <Card.Title>QR Code Preview</Card.Title>
-      <Card.Description>(right-click & save-as to download image)</Card.Description>
-    </Card.Header>
-    <Card.Content>
-      <QRCode/>
-    </Card.Content>
-    <Card.Footer>
-    </Card.Footer>
-  </Card.Root>
-
-  <div class="side-bar">
-    {#if qrOutput.svg}
-      <Card.Root>
-        <Card.Header>
-          <!--        <Card.Title>Output</Card.Title>-->
-          <!--        <Card.Description></Card.Description>-->
-        </Card.Header>
-        <Card.Content>
-          <QROutput/>
-        </Card.Content>
-        <Card.Footer>
-        </Card.Footer>
-      </Card.Root>
-    {/if}
-
-    <Card.Root>
-      <Card.Header>
-        <Card.Title>Configuration</Card.Title>
-        <Card.Description></Card.Description>
-      </Card.Header>
-      <Card.Content>
-        <QRConfig/>
-      </Card.Content>
-      <Card.Footer>
-        {#if qrOutput.remark}
-          <div>
-            <p>⚠️{qrOutput.remark}</p>
-          </div>
-        {/if}
-      </Card.Footer>
-    </Card.Root>
+  <div class="welcome">
+    <p>Need a QR code for your plotter?<br/>
+      You came to the right place!<br/><br/></p>
+    <Button>
+      <a href="/create">Generate QR</a>
+    </Button>
   </div>
+
+  <p class="intro">
+    <b>Hi there!</b><br/>
+    I'm David Vandenbogaerde, or <i><a href="https://www.d17e.dev" target="_blank">d17e</a></i> for short.<br/><br/>
+    Not so long ago I wanted to plot QR codes on my <a href="https://www.axidraw.com">Axidraw</a>, only to realise it wasn't exactly
+    straight forward. In fact, this is what the first attempt using available libraries and tools looked like:
+  </p>
+  <img src="first_attempt_plotting_qr.jpg" alt="First attempt at plotting QR code on Axidraw"/>
+  <p class="intro">
+    Looks cute, but not really a success...<br/><br/>
+    That's when I thought I could solve this problem once and for all. For everybody. Forever.<br/>
+    This is exactly an attempt at that.<br/><br/>
+    The code is currently not public, but will probably be soon after some cleaning
+    up.
+    In case you have some ideas, feedback or just want to say hi, please do <a href="https://forms.d17e.dev/contact" target="_blank">get
+    in touch</a> and let's have a chat!
+  </p>
+  <Button class="mt-16 mb-16">
+    <a href="/create">Generate QR</a>
+  </Button>
 </div>
 
 <style>
-    .generator-layout {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-        align-items: center;
-        gap: 1rem;
+    a {
+        border-style: dashed;
+        border-bottom-width: 1px;
+        border-color: hsl(var(--foreground));
     }
 
-    .side-bar {
-        height: 100%;
+    a:hover {
+        border-color: darkorange;
+    }
+
+    .welcome {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
-        max-width: 18rem;
+        justify-content: center;
+        align-items: center;
+        height: calc(100vh - 8rem);
+        width: 100vw;
+        text-align: center;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100vw;
+    }
+
+    img {
+        width: 90vw;
+        max-width: 40rem;
+        margin: 1rem 0;
+    }
+
+    .intro {
+        width: 90vw;
+        max-width: 40rem;
     }
 </style>

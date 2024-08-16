@@ -6,6 +6,7 @@ export interface QrConfig {
 	penTip: 'Round' | 'Square';
 	// horizontal & vertical blocks start from the full set of blocks
 	overlap: boolean;
+	transparent: boolean;
 }
 
 export interface QrOutput {
