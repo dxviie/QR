@@ -43,7 +43,7 @@
   <div class="flex flex-col gap-2">
     {#if qrOutput.svg}
       <div>
-        <Button on:click={downloadSVG}>Download SVG</Button>
+        <Button on:click={downloadSVG} data-umami-event={"export-svg"}>Download SVG</Button>
       </div>
     {/if}
     {#if qrOutput.totalPathLength}
