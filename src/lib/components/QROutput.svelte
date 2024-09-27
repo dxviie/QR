@@ -3,8 +3,9 @@
   import {qrOutputStore} from "$lib/qrStore";
   import {Button} from "$lib/components/ui/button";
   import {toast} from "svelte-sonner";
+  import type {QrOutput} from "$lib/qr";
 
-  let qrOutput = {
+  let qrOutput: QrOutput = {
     svg: '',
     remark: '',
     totalPathLength: 0
@@ -15,7 +16,7 @@
   });
 
   const downloadSVG = async () => {
-    const svg = qrOutput.svg;
+    const svg = qrOutput.svg as string;
     const blob = new Blob([svg], {type: 'image/svg+xml'});
     const url = URL.createObjectURL(blob);
 
