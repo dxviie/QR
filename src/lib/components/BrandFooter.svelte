@@ -1,6 +1,4 @@
 <script>
-    import {mode} from 'mode-watcher';
-
     const year = new Date().getFullYear();
 </script>
 
@@ -8,7 +6,7 @@
   <div class="footer-content">
     <div class="footer-content__left">
       <div>
-        <p>made with 🧡 by <a href="https://www.d17e.dev" target="_blank">David Vandenbogaerde</a></p>
+        <p>made with 🧡 by <a href="https://www.d17e.dev" target="_blank">d17e.dev</a></p>
         <p><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">© CC BY-NC 4.0</a>{" "}| {year} </p>
       </div>
     </div>

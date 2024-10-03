@@ -2,30 +2,38 @@
     import '../app.css';
     import {Toaster} from "$lib/components/ui/sonner";
     import {ModeWatcher} from "mode-watcher";
-    import {toggleMode} from "mode-watcher";
+    import {toggleMode, mode} from "mode-watcher";
     import {Button} from "$lib/components/ui/button";
-    import {Moon, Sun} from "lucide-svelte";
+    import {CircleHelp, Moon, Sun} from "lucide-svelte";
     import Footer from "$lib/components/BrandFooter.svelte";
+    import '@fontsource/bitter';
+    import '@fontsource/poppins';
 </script>
 
 <div class="app-container">
   <header>
     <div class="header-left">
-      <div class="img-container"><img src="favicon.png" alt="qr favicon as logo"/></div>
-      <a href="/" target="_self">
-        <div class="title"><p class="logo">qr.d17e.dev</p>
-          <p class="description">Plottable QR Code Generator</p></div>
+      <a href="/" target="_self" aria-label="link to home">
+        <div class="title"><p class="logo">qr.d17e.dev</p></div>
+        <div><p class="description">Plottable QR Code Generator</p></div>
       </a>
     </div>
-    <Button on:click={toggleMode} variant="ghost" size="icon">
-      <Sun
-              class="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
-      />
-      <Moon
-              class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
-      />
-      <span class="sr-only">Toggle theme</span>
-    </Button>
+    <div class="header-right">
+      <Button on:click={toggleMode} variant="ghost" size="icon">
+        {#if $mode === 'dark'}
+          <Moon/>
+        {:else}
+          <Sun/>
+        {/if}
+        <span class="sr-only">Toggle theme</span>
+      </Button>
+      <a href="/about" target="_self">
+        <Button variant="ghost" size="icon">
+          <CircleHelp/>
+          <span class="sr-only">Go to about page</span>
+        </Button>
+      </a>
+    </div>
   </header>
   <main>
     <slot></slot>
@@ -41,18 +49,18 @@
     .app-container {
         display: flex;
         flex-direction: column;
-        height: 100vh;
-        width: 100vw;
     }
 
     header {
-        background-color: hsl(var(--foreground));
-        color: hsl(var(--background));
+        width: 100%;
+        height: 6rem;
+        position: fixed;
         padding: 1rem;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
+        align-self: center;
         font-size: large;
     }
 
@@ -62,41 +70,51 @@
         align-items: center;
     }
 
-    .img-container {
-        height: 3.5rem;
-        width: 3.5rem;
-        margin-right: 1rem;
-        overflow: hidden;
-    }
-
-    img {
-        transform: scale(1.1);
-        filter: brightness(1.5) contrast(3);
+    .header-right {
+        height: 2.5rem;
     }
 
     .title {
+        padding: 0 .7rem 0 0.6rem;
+        background-color: hsl(var(--foreground));
+        color: hsl(var(--background));
         font-size: xx-large;
         font-weight: bold;
     }
 
     .description {
-        font-size: medium;
+        font-size: x-small;
         font-weight: normal;
     }
 
     main {
+        min-height: calc(100vh - 5rem);
+        padding-top: 7rem;
         display: flex;
         flex-direction: column;
         align-items: center;
-        flex-grow: 1;
-        padding: 1rem;
     }
 
     footer {
+        height: 5rem;
+    }
+
+    :global(button) {
+        font-family: Bitter, serif;
+        font-weight: bold !important;
+        font-size: large !important;
+    }
+
+    :global(button:hover) {
+        background-color: darkorange !important;
+    }
+
+    :global(button:active) {
+        transform: translateY(1px);
     }
 
     :global(body) {
-        font-family: Poppins;
+        font-family: Poppins, sans-serif;
         font-size: medium;
     }
 

@@ -7,8 +7,8 @@ export const qrConfigStore = writable<QrConfig>({
 	ecl: 'L',
 	penMmSize: 0.6,
 	penTip: 'Round',
-	overlap: true,
-	transparent: true
+	overlap: false,
+	transparent: false
 });
 
 export const qrOutputStore = writable<QrOutput>({
