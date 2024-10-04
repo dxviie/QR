@@ -18,17 +18,19 @@
 
 <div class="generator-layout">
 
-  <Card.Root>
-    <Card.Header>
-    </Card.Header>
-    <Card.Content>
-      <QRCode/>
-    </Card.Content>
-    <Card.Footer>
-    </Card.Footer>
-  </Card.Root>
+  <div class="qr-wrapper">
+    <Card.Root>
+      <Card.Header>
+      </Card.Header>
+      <Card.Content>
+        <QRCode/>
+      </Card.Content>
+      <Card.Footer>
+      </Card.Footer>
+    </Card.Root>
+  </div>
 
-  <div class="side-bar">
+  <div class="controls">
     {#if qrOutput.svg}
       <Card.Root>
         <Card.Header>
@@ -43,7 +45,7 @@
 
     <Card.Root>
       <Card.Header>
-        <Card.Title>Configuration</Card.Title>
+        <Card.Title tag="h6">Controls</Card.Title>
         <Card.Description></Card.Description>
       </Card.Header>
       <Card.Content>
@@ -73,14 +75,34 @@
     @media (max-width: 768px) {
         .generator-layout {
             flex-direction: column;
+            min-height: 100svh;
+            max-width: 1200px;
+        }
+
+        .qr-wrapper {
+            position: sticky;
+            top: 5rem;
+        }
+
+        .controls {
+            z-index: 1;
+            backdrop-filter: blur(5px);
+            
         }
     }
 
-    .side-bar {
-        height: 100%;
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-        max-width: 18rem;
+    .controls {
+        padding: 1rem;
+        background-color: hsl(var(--background));
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .controls > * {
+        margin-bottom: 1rem;
+    }
+
+    .controls > *:last-child {
+        margin-bottom: 0;
     }
 </style>

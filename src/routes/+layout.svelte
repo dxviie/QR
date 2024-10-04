@@ -49,9 +49,11 @@
     .app-container {
         display: flex;
         flex-direction: column;
+        align-items: center;
     }
 
     header {
+        background-color: hsl(var(--background));
         width: 100%;
         height: 6rem;
         position: fixed;
@@ -89,7 +91,8 @@
 
     main {
         min-height: calc(100vh - 5rem);
-        padding-top: 7rem;
+        max-width: 1200px;
+        padding-top: 5rem;
         display: flex;
         flex-direction: column;
         align-items: center;

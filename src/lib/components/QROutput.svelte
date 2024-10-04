@@ -46,7 +46,6 @@
       <div>
         <Button on:click={downloadSVG} data-umami-event={"export-svg"}>Download SVG</Button>
       </div>
-      <div class="asterisk">*download as image: right-click > save as</div>
     {/if}
     {#if qrOutput.totalPathLength}
       <div>

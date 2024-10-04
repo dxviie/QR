@@ -1,38 +1,77 @@
-# create-svelte
+# QR Code Generator for Pen Plotters
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+![qr.d17e.dev.screenshot.png](https://directus.d17e.dev/assets/dc78fbf9-46d0-45ca-82cf-171eead0b688)
 
-## Creating a project
+This project is a QR Code Generator designed specifically for pen plotters. It works, but the code is a bit of a mess. Enter at your own
+risk. 🙃
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Features
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+- Generate QR codes
+- Customize QR code configurations
+- Responsive design for various screen sizes
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+## Main Dependencies
 
-## Developing
+- Svelte+SvelteKit as the backbone
+- Shadcn-ui for UI components
+- PaperJs for drawing the QR code
+- qrcode-svg npm package for generating the QR codes
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Getting Started
+
+### Prerequisites
+
+- Node.js
+- npm
+
+### Installation
+
+1. Clone the repository:
+   ```bash
+   git clone <repository-url>
+   cd <repository-directory>
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+### Development
+
+To start the development server:
 
 ```bash
 npm run dev
+```
 
-# or start the server and open the app in a new browser tab
+To start the server and open the app in a new browser tab:
+
+```bash
 npm run dev -- --open
 ```
 
-## Building
+### Building
 
-To create a production version of your app:
+To create a production build:
 
 ```bash
 npm run build
 ```
 
-You can preview the production build with `npm run preview`.
+To preview the production build:
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+```bash
+npm run preview
+```
+
+## Deployment
+
+To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+
+## License
+
+This project is licensed under the MIT License.
+
+```
