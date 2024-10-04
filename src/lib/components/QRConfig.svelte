@@ -6,6 +6,7 @@
   import {qrConfigStore} from "$lib/qrStore";
   import type {QrConfig} from "$lib/qr";
   import {onMount} from "svelte";
+  import {Github} from "lucide-svelte";
 
   // Subscribe to the store to get the initial values
   let qrConfig: QrConfig = {
@@ -124,9 +125,10 @@
     </Select.Root>
   </div>
 
-  <div class="flex flex-col items-baseline gap-1.5 space-x-2 mt-2">
+  <div class="flex flex-col items-baseline gap-2.5 space-x-2 mt-2">
     <div>
-      <Checkbox id="terms" aria-labelledby="terms-label" checked={qrConfig.overlap} onCheckedChange={(checked) => updateOverlap(checked)}/>
+      <Checkbox id="overlap" aria-labelledby="overlap-label" checked={qrConfig.overlap}
+                onCheckedChange={(checked) => updateOverlap(checked)}/>
       <Label id="overlap-label" for="overlap">
         Overlap Allowed
       </Label>
@@ -138,5 +140,21 @@
         Transparent Lines
       </Label>
     </div>
+    <div class="linky">
+      <Github class="w-6 h-6"/>
+      <a href="https://github.com/dxviie/QR" target="_blank">
+
+        Source Code
+      </a>
+    </div>
   </div>
 </div>
+
+<style>
+    .linky {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: hsl(var(--foreground));
+    }
+</style>

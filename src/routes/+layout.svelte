@@ -129,4 +129,15 @@
     :global(.description) {
         font-family: Poppins, sans-serif;
     }
+
+    :global(a) {
+        border-style: dashed;
+        border-bottom-width: 1px;
+        border-color: hsl(var(--foreground));
+    }
+
+    :global(a:hover) {
+        border-color: darkorange;
+    }
+
 </style>

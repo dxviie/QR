@@ -15,8 +15,8 @@
     Looks cute, but not really a success...<br/><br/>
     That's when I thought I could solve this problem once and for all. For everybody. Forever.<br/><br/>
     And this is my attempt.<br/><br/>
-    The code is currently not public, but will probably be soon after some cleaning
-    up.
+    The <a href="https://github.com/dxviie/QR" target="_blank">code is on my github</a> code is on my github, but beware. It is far from my
+    best work.
     In case you have some ideas, feedback or just want to say hi, please do <a href="https://forms.d17e.dev/contact" target="_blank">get
     in touch</a> and let's have a chat!
   </p>
@@ -26,16 +26,6 @@
 </div>
 
 <style>
-    a {
-        border-style: dashed;
-        border-bottom-width: 1px;
-        border-color: hsl(var(--foreground));
-    }
-
-    a:hover {
-        border-color: darkorange;
-    }
-
     .content {
         padding-top: 2rem;
         display: flex;

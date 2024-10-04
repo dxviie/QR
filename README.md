@@ -1,6 +1,6 @@
 # QR Code Generator for Pen Plotters
 
-![qr.d17e.dev.screenshot.png](https://directus.d17e.dev/assets/dc78fbf9-46d0-45ca-82cf-171eead0b688)
+![qr.d17e.dev.screenshot.png](https://github.com/dxviie/QR/blob/main/static/qr.d17e.dev.screenshot.png?raw=true)
 
 This project is a QR Code Generator designed specifically for pen plotters. It works, but the code is a bit of a mess. Enter at your own
 risk. 🙃
