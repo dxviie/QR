@@ -13,7 +13,7 @@
   <img src="first_attempt_plotting_qr.jpg" alt="First attempt at plotting QR code on Axidraw"/>
   <p class="intro">
     Looks cute, but not really a success...<br/><br/>
-    That's when I thought I could solve this problem once and for all. For everybody. Forever.<br/>
+    That's when I thought I could solve this problem once and for all. For everybody. Forever.<br/><br/>
     And this is my attempt.<br/><br/>
     The code is currently not public, but will probably be soon after some cleaning
     up.
@@ -37,6 +37,7 @@
     }
 
     .content {
+        padding-top: 2rem;
         display: flex;
         flex-direction: column;
         justify-content: center;

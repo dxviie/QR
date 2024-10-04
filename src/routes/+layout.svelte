@@ -100,6 +100,7 @@
 
     footer {
         height: 5rem;
+        width: 100%;
     }
 
     :global(button) {
