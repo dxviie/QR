@@ -1,15 +1,18 @@
 <script>
     import {onMount} from 'svelte';
     import {Input} from "$lib/components/ui/input";
+    import {Label} from "$lib/components/ui/label";
+    import {Button} from "$lib/components/ui/button";
 
     let fileInput;
+    let selectedFile;
+    let resolution = 75;
     let imagePreview;
     let qrData = [];
     let qrPaths = [];
     let canvas;
     let ctx;
-    const qrInputDimension = 75;
-    const svgOutputSize = 375;
+    const svgOutputSize = 300;
 
     const penWidth = 0.5;
 
@@ -22,30 +25,30 @@
     });
 
     function handleFileUpload(event) {
-        const file = event.target.files[0];
-        if (file) {
+        selectedFile = event.target.files[0];
+        if (selectedFile) {
             const reader = new FileReader();
             reader.onload = (e) => {
                 imagePreview = e.target.result;
                 analyzeImageAndGenerateQrPaths();
             };
-            reader.readAsDataURL(file);
+            reader.readAsDataURL(selectedFile);
         }
     }
 
     function analyzeImageAndGenerateQrPaths() {
         const img = new Image();
         img.onload = () => {
-            canvas.width = qrInputDimension;
-            canvas.height = qrInputDimension;
-            ctx.drawImage(img, 0, 0, qrInputDimension, qrInputDimension);
-            const imageData = ctx.getImageData(0, 0, qrInputDimension, qrInputDimension);
+            canvas.width = resolution;
+            canvas.height = resolution;
+            ctx.drawImage(img, 0, 0, resolution, resolution);
+            const imageData = ctx.getImageData(0, 0, resolution, resolution);
             qrData = [];
 
-            for (let y = 0; y < qrInputDimension; y++) {
+            for (let y = 0; y < resolution; y++) {
                 const row = [];
-                for (let x = 0; x < qrInputDimension; x++) {
-                    const index = (y * qrInputDimension + x) * 4;
+                for (let x = 0; x < resolution; x++) {
+                    const index = (y * resolution + x) * 4;
                     const r = imageData.data[index];
                     const g = imageData.data[index + 1];
                     const b = imageData.data[index + 2];
@@ -55,7 +58,7 @@
                 qrData.push(row);
             }
             qrPaths = generateQrPaths(qrData);
-            const size = qrInputDimension * penWidth;
+            const size = resolution * penWidth;
             plottableQrSize = size + "mm";
             plottableQrViewBox = `0 0 ${size} ${size}`;
         };
@@ -129,21 +132,42 @@
 
         return paths;
     }
+
+    function downloadPlottableSVG() {
+        const svg = `<svg width="${plottableQrSize}" height="${plottableQrSize}" viewBox="${plottableQrViewBox}" xmlns="http://www.w3.org/2000/svg">
+            ${qrPaths.map(path => `<path d="${path}" fill="none" stroke="black" stroke-width="${penWidth}" stroke-linecap="round"/>`).join('')}
+        </svg>`;
+        const blob = new Blob([svg], {type: 'image/svg+xml'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        let fileName = 'plottable-qr.svg';
+        if (selectedFile && selectedFile.name) {
+            fileName = selectedFile.name.replace(/\.[^/.]+$/, "") + '-plottable.svg';
+        }
+        a.download = fileName;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
 </script>
 
 <div class="generator">
+  <div class="header inputs">
+    <div class="file-input">
+      <Label for="file">Select Image:</Label>
+      <Input type="file" id="file" accept="image/*" on:change={handleFileUpload} bind:this={fileInput}/>
+    </div>
+    <div class="resolution-input">
+      <Label for="resolution">QR Dimensions:</Label>
+      <Input type="number" bind:value={resolution} id="resolution"/></div>
+  </div>
   <div class="header">
     <div class="input">
-      <Input type="file" accept="image/*" on:change={handleFileUpload} bind:this={fileInput}/>
+
       {#if imagePreview}
         <h3>Input Frame:</h3>
         <img src={imagePreview} alt="Uploaded QR Code" width={svgOutputSize} height={svgOutputSize}>
       {/if}
-      <!--      <input type="file" accept="image/*" on:change={handleFileUpload} bind:this={fileInput}>-->
-      <!--      {#if imagePreview}-->
-      <!--        <h3>Input Frame:</h3>-->
-      <!--        <img src={imagePreview} alt="Uploaded QR Code" width={svgOutputSize} height={svgOutputSize}>-->
-      <!--      {/if}-->
     </div>
 
     {#if qrData.length > 0}
@@ -165,7 +189,7 @@
     <div>
       {#if qrData.length > 0}
         <h3>RAW SVG Output:</h3>
-        <svg width={svgOutputSize} height={svgOutputSize} viewBox={`0 0 ${qrInputDimension} ${qrInputDimension}`}>
+        <svg width={svgOutputSize} height={svgOutputSize} viewBox={`0 0 ${resolution} ${resolution}`}>
           {#each qrData as row, y}
             {#each row as cell, x}
               {#if cell}
@@ -188,32 +212,48 @@
     </div>
   </div>
 
+  <div class="header">
+    {#if qrPaths.length > 0}
+      <Button on:click={downloadPlottableSVG}>Download Plottable SVG</Button>
+    {/if}
+  </div>
+
 </div>
 
 <style>
     .generator {
+        margin-top: 3rem;
         display: flex;
         flex-direction: column;
         gap: 1rem;
     }
 
-    .html-output {
-        padding-top: 2.5rem;
-    }
-
     .header {
         display: flex;
         gap: 1rem;
+        flex-wrap: wrap;
+        justify-content: center;
     }
 
+    .inputs {
+        flex-direction: row;
+    }
+
+    .file-input {
+        width: calc(100% - 9rem);
+    }
+
+    .resolution-input {
+        width: 8rem;
+    }
 
     table {
         border-collapse: collapse;
     }
 
     td {
-        width: 5px;
-        height: 5px;
+        width: 4px;
+        height: 4px;
         padding: 0;
     }
 

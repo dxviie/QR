@@ -13,7 +13,7 @@
 <div class="app-container">
   <header>
     <div class="header-left">
-      <a href="/" target="_self" aria-label="link to home">
+      <a href="/" target="_self" aria-label="link to home" class="header-link">
         <div class="title"><p class="logo">qr.d17e.dev</p></div>
         <div><p class="description">Plottable QR Code Generator</p></div>
       </a>
@@ -27,7 +27,7 @@
         {/if}
         <span class="sr-only">Toggle theme</span>
       </Button>
-      <a href="/about" target="_self">
+      <a href="/about" target="_self" class="header-link">
         <Button variant="ghost" size="icon">
           <CircleHelp/>
           <span class="sr-only">Go to about page</span>
@@ -74,6 +74,10 @@
 
     .header-right {
         height: 2.5rem;
+    }
+
+    .header-link {
+        border-bottom-width: 0;
     }
 
     .title {
