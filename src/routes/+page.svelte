@@ -45,7 +45,7 @@
 
     <Card.Root>
       <Card.Header>
-        <Card.Title tag="h6">Controls</Card.Title>
+        <Card.Title tag="h6">Configuration</Card.Title>
         <Card.Description></Card.Description>
       </Card.Header>
       <Card.Content>
@@ -87,7 +87,6 @@
         .controls {
             z-index: 1;
             backdrop-filter: blur(5px);
-            
         }
     }
 

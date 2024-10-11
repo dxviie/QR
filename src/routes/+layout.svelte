@@ -92,7 +92,7 @@
     main {
         min-height: calc(100vh - 5rem);
         max-width: 1200px;
-        padding-top: 5rem;
+        padding-top: 6rem;
         display: flex;
         flex-direction: column;
         align-items: center;
