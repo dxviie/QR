@@ -20,7 +20,7 @@ export function generateQrSVGPaths(
 		penWidth: number,
 		transparent: boolean
 	): string {
-		return `<path d="M${startX},${startY}H${endX}V${endY}" fill="none" stroke="black" stroke-width=${penWidth} stroke-linecap="round" opacity="${transparent ? 0.7 : 1}"/>`;
+		return `<path d="M${startX},${startY}H${endX}V${endY}" fill="none" stroke="black" stroke-width=${penWidth} stroke-linecap="round" opacity="${transparent ? 0.5 : 1}"/>`;
 	}
 
 	function visitRow(visited: boolean[][], y: number, startX: number, endX: number) {
@@ -68,7 +68,7 @@ export function generateQrSVGPaths(
 			if (qrData[y][x] && startY === null && (!visited[y][x] || overlap)) {
 				startY = y;
 			} else if (
-				(!qrData[y][x] || y === height - 1) &&
+				(!qrData[y][x] || y === height - 1 || (visited[x][y] && !overlap)) &&
 				startY !== null &&
 				(!visited[y][x] || overlap)
 			) {

@@ -11,12 +11,10 @@
   // Subscribe to the store to get the initial values
   let qrConfig: QrConfig = {
     value: 'https://qr.d17e.dev/',
-    mmSize: 15,
     ecl: 'L',
     penMmSize: .5,
-    penTip: 'Round',
     overlap: false,
-    transparent: false
+    transparent: true
   };
 
   qrConfigStore.subscribe(value => {
@@ -53,11 +51,6 @@
     debouncedUpdate({value});
   }
 
-  function handleMmSizeChange(event: Event) {
-    const mmSize = Number((event.target as HTMLInputElement).value);
-    debouncedUpdate({mmSize});
-  }
-
   function updateEcl(ecl: string) {
     debouncedUpdate({ecl});
   }
@@ -65,10 +58,6 @@
   function handlePenMmSizeChange(event: Event) {
     const penMmSize = Number((event.target as HTMLInputElement).value);
     debouncedUpdate({penMmSize});
-  }
-
-  function updatePenTip(penTip: string) {
-    debouncedUpdate({penTip});
   }
 
   function updateOverlap(overlap: boolean) {
@@ -85,11 +74,6 @@
   <div>
     <Label for="value">QR Text</Label>
     <Input type="text" id="value" value={qrConfig.value} on:change={handleQrTextChange}/>
-  </div>
-
-  <div>
-    <Label for="mmSize">QR Code Size (10 - 500 mm)</Label>
-    <Input type="number" id="mmSize" min="10" max="500" value={qrConfig.mmSize} on:change={handleMmSizeChange}/>
   </div>
 
   <div>
@@ -110,19 +94,6 @@
   <div>
     <Label for="penMmSize">Pen Tip Size (>0.05 mm)</Label>
     <Input type="number" id="penMmSize" min="0.05" step="0.05" value={qrConfig.penMmSize} on:change={handlePenMmSizeChange}/>
-  </div>
-
-  <div>
-    <Label for="penTip">Pen Tip</Label>
-    <Select.Root onSelectedChange={(event) => updatePenTip(event.value)}>
-      <Select.Trigger>
-        {qrConfig.penTip}
-      </Select.Trigger>
-      <Select.Content id="penTip">
-        <Select.Item value="Round">Round</Select.Item>
-        <Select.Item value="Square">Square</Select.Item>
-      </Select.Content>
-    </Select.Root>
   </div>
 
   <div class="flex flex-col items-baseline gap-2.5 space-x-2 mt-2">

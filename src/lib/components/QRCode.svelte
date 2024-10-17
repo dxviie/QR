@@ -4,10 +4,53 @@
   import {onMount} from "svelte";
   import {qrConfigStore, qrOutputStore} from "$lib/qrStore";
   import type {QrConfig} from "$lib/qr";
+  import {generateQrSVGPaths} from "$lib/qrPathGenerator";
 
   let canvas: HTMLCanvasElement;
   let project: paper.Project;
   let zoom = 1;
+
+  let svgContainer;
+  let plottableQrViewBox = "0 0 12.5 12.5";
+
+  function svgToQRArray(svgString: string): boolean[][] {
+    // Extract width and height from the SVG string
+    const widthMatch = svgString.match(/width="(\d+)"/);
+    const heightMatch = svgString.match(/height="(\d+)"/);
+
+    if (!widthMatch || !heightMatch) {
+      throw new Error("Unable to extract width or height from SVG string");
+    }
+
+    const width = parseInt(widthMatch[1]);
+    const height = parseInt(heightMatch[1]);
+
+    // Calculate the number of cells in each dimension
+    const cellSize = 2.56; // As per the given SVG
+    const numCells = Math.round(width / cellSize);
+
+    // Initialize the 2D array with false values
+    const qrArray = Array(numCells).fill().map(() => Array(numCells).fill(false));
+
+    // Use regex to find all rect elements
+    const rectRegex = /<rect\s+x="([\d.]+)"\s+y="([\d.]+)"\s+width="[\d.]+"[^>]+style="([^"]+)"/g;
+    let match;
+
+    while ((match = rectRegex.exec(svgString)) !== null) {
+      const x = parseFloat(match[1]);
+      const y = parseFloat(match[2]);
+      const style = match[3];
+
+      if (style.includes("fill:#000000")) {
+        const cellX = Math.floor(x / cellSize);
+        const cellY = Math.floor(y / cellSize);
+        qrArray[cellY][cellX] = true;
+      }
+    }
+
+    return qrArray;
+  }
+
 
   let config: QrConfig | null = null;
   qrConfigStore.subscribe(
@@ -38,6 +81,12 @@
         // Generate the SVG string and import to paper
         const svg = qr.svg();
         console.debug('qr svg:', svg);
+        let qrData = svgToQRArray(svg);
+        console.debug('qr data:', qrData);
+        let paths = generateQrSVGPaths(qrData, 0.5, config?.overlap || false, config?.transparent || false);
+        if (paths && svgContainer) {
+          svgContainer.innerHTML = paths.join('');
+        }
         project.clear();
         project.view.play();
         qrOutputStore.update(store => ({
@@ -68,7 +117,7 @@
     project = paper.project;
 
     project.view.onFrame = (event: { time: number; delta: number; count: number }) => {
-      if (!config || !config.value || config.penMmSize <= 0 || config.mmSize <= 0) {
+      if (!config || !config.value || config.penMmSize <= 0) {
         qrOutputStore.update(() => ({
           svg: '',
           totalPathLength: 0,
@@ -83,8 +132,8 @@
         zoom = 1;
       }
       const items = project.activeLayer.getItems({});
-      const width = config.mmSize * PAPERJS_MM_TO_PT;
-      const height = config.mmSize * PAPERJS_MM_TO_PT;
+      const width = 15 * PAPERJS_MM_TO_PT;
+      const height = 15 * PAPERJS_MM_TO_PT;
 
       if (items.length > 0) {
         project.clear();
@@ -303,7 +352,7 @@
           'penWidth',
           penWidth
         );
-        const strokeCap = config.penTip === 'Round' ? 'round' : 'square';
+        const strokeCap = 'round';
         for (const rectangle of horizontalRectangles) {
           const yStart = rectangle.bounds.y + penWidth / 2;
           for (let l = 0; l < lines - 1; l++) {
@@ -440,6 +489,9 @@
 
 <canvas id="qr-canvas" bind:this={canvas} data-paper-hidpi="off"></canvas>
 
+<svg class="qr-svg" viewBox={plottableQrViewBox} bind:this={svgContainer}>
+</svg>
+
 <style>
     #qr-canvas {
         display: block;
@@ -452,6 +504,21 @@
 
     @media (max-width: 850px) {
         #qr-canvas {
+            width: 100%;
+        }
+    }
+
+    .qr-svg {
+        display: block;
+        width: calc(100vw - 42rem);
+        max-width: 50rem;
+        aspect-ratio: 1;
+        background-color: white;
+        border-radius: .5rem;
+    }
+
+    @media (max-width: 850px) {
+        .qr-svg {
             width: 100%;
         }
     }
