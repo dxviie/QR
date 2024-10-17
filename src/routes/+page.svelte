@@ -4,6 +4,7 @@
   import QRConfig from "$lib/components/QRConfig.svelte";
   import QROutput from "$lib/components/QROutput.svelte";
   import {qrOutputStore} from "$lib/qrStore";
+  import {mode} from "mode-watcher";
 
   let qrOutput = {
     svg: '',
@@ -30,7 +31,7 @@
     </Card.Root>
   </div>
 
-  <div class="controls">
+  <div class="controls {$mode}">
     {#if qrOutput.svg}
       <Card.Root>
         <Card.Header>
@@ -51,13 +52,6 @@
       <Card.Content>
         <QRConfig/>
       </Card.Content>
-      <Card.Footer>
-        {#if qrOutput.remark}
-          <div>
-            <p>⚠️{qrOutput.remark}</p>
-          </div>
-        {/if}
-      </Card.Footer>
     </Card.Root>
   </div>
 </div>
@@ -70,6 +64,13 @@
         justify-content: space-around;
         align-items: center;
         gap: 1rem;
+    }
+
+    .controls {
+        padding: 1rem;
+        background-color: hsl(var(--background));
+        border-radius: 0.5rem;
+        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
     }
 
     @media (max-width: 768px) {
@@ -85,23 +86,18 @@
         }
 
         .controls {
+            background-color: rgba(255, 255, 255, 0.9);
+            width: 100vw;
             z-index: 1;
             backdrop-filter: blur(5px);
         }
+
+        .controls.dark {
+            background-color: rgba(0, 0, 0, 0.75);
+        }
     }
 
-    .controls {
-        padding: 1rem;
-        background-color: hsl(var(--background));
-        border-radius: 0.5rem;
-        box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1);
-    }
-
-    .controls > * {
-        margin-bottom: 1rem;
-    }
-
-    .controls > *:last-child {
-        margin-bottom: 0;
+    :global(.bg-card) {
+        background-color: transparent;
     }
 </style>

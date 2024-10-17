@@ -8,7 +8,7 @@
   let qrOutput: QrOutput = {
     svg: '',
     remark: '',
-    totalPathLength: 0
+    outputInfo: ''
   }
 
   qrOutputStore.subscribe(value => {
@@ -47,9 +47,9 @@
         <Button on:click={downloadSVG} data-umami-event={"export-svg"}>Download SVG</Button>
       </div>
     {/if}
-    {#if qrOutput.totalPathLength}
+    {#if qrOutput.outputInfo}
       <div>
-        <label for="totalPathLength">Total Path Length =~ {qrOutput.totalPathLength.toFixed(0)} mm </label>
+        <label for="totalPathLength" class="asterisk">{@html qrOutput.outputInfo}</label>
       </div>
     {/if}
   </div>
@@ -57,6 +57,6 @@
 
 <style>
     .asterisk {
-        font-size: x-small;
+        font-size: small;
     }
 </style>

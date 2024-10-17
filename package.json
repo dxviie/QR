@@ -43,7 +43,6 @@
     "clsx": "^2.1.1",
     "lucide-svelte": "^0.390.0",
     "mode-watcher": "^0.3.0",
-    "paper": "^0.12.17",
     "qrcode-svg": "^1.1.0",
     "svelte-sonner": "^0.3.24",
     "tailwind-merge": "^2.3.0",

@@ -1,61 +1,63 @@
 <script lang="ts">
 
-  import paper from "paper";
-  import {onMount} from "svelte";
   import {qrConfigStore, qrOutputStore} from "$lib/qrStore";
   import type {QrConfig} from "$lib/qr";
   import {generateQrSVGPaths} from "$lib/qrPathGenerator";
 
-  let canvas: HTMLCanvasElement;
-  let project: paper.Project;
-  let zoom = 1;
+  let svgContainer: any;
+  let plottableQrViewBox = "0 0 0 0";
 
-  let svgContainer;
-  let plottableQrViewBox = "0 0 12.5 12.5";
-
-  function svgToQRArray(svgString: string): boolean[][] {
-    // Extract width and height from the SVG string
-    const widthMatch = svgString.match(/width="(\d+)"/);
-    const heightMatch = svgString.match(/height="(\d+)"/);
-
-    if (!widthMatch || !heightMatch) {
-      throw new Error("Unable to extract width or height from SVG string");
+  function calculateQRSize(text, ecl) {
+    // Estimate the mode based on the content
+    let mode;
+    if (/^[0-9]+$/.test(text)) {
+      mode = 'numeric';
+    } else if (/^[A-Z0-9 $%*+\-./:]+$/.test(text)) {
+      mode = 'alphanumeric';
+    } else {
+      mode = 'byte';
     }
 
-    const width = parseInt(widthMatch[1]);
-    const height = parseInt(heightMatch[1]);
+    // Capacity in bits for each version and ECL
+    const capacities = {
+      'L': [152, 272, 440, 640, 864, 1088, 1248, 1552, 1856, 2192, 2592, 2960, 3424, 3688, 4184, 4712, 5176, 5768, 6360, 6888, 7456, 8048, 8752, 9392, 10208, 10960, 11744, 12248, 13048, 13880, 14744, 15640, 16568, 17528, 18448, 19472, 20528, 21616, 22496, 23648],
+      'M': [128, 224, 352, 512, 688, 864, 992, 1232, 1456, 1728, 2032, 2320, 2672, 2920, 3320, 3624, 4056, 4504, 5016, 5352, 5712, 6256, 6880, 7312, 8000, 8496, 9024, 9544, 10136, 10984, 11640, 12328, 13048, 13800, 14496, 15312, 15936, 16816, 17728, 18672],
+      'Q': [104, 176, 272, 384, 496, 608, 704, 880, 1056, 1232, 1440, 1648, 1952, 2088, 2360, 2600, 2936, 3176, 3560, 3880, 4096, 4544, 4912, 5312, 5744, 6032, 6464, 6968, 7288, 7880, 8264, 8920, 9368, 9848, 10288, 10832, 11408, 12016, 12656, 13328],
+      'H': [72, 128, 208, 288, 368, 480, 528, 688, 800, 976, 1120, 1264, 1440, 1576, 1784, 2024, 2264, 2504, 2728, 3080, 3248, 3536, 3712, 4112, 4304, 4768, 5024, 5288, 5608, 5960, 6344, 6760, 7208, 7688, 7888, 8432, 8768, 9136, 9776, 10208]
+    };
 
-    // Calculate the number of cells in each dimension
-    const cellSize = 2.56; // As per the given SVG
-    const numCells = Math.round(width / cellSize);
+    // Calculate the bit length of the data
+    let bitLength;
+    switch (mode) {
+      case 'numeric':
+        bitLength = Math.ceil(text.length * 3.33);
+        break;
+      case 'alphanumeric':
+        bitLength = Math.ceil(text.length * 6);
+        break;
+      case 'byte':
+      default:
+        bitLength = text.length * 8;
+    }
 
-    // Initialize the 2D array with false values
-    const qrArray = Array(numCells).fill().map(() => Array(numCells).fill(false));
-
-    // Use regex to find all rect elements
-    const rectRegex = /<rect\s+x="([\d.]+)"\s+y="([\d.]+)"\s+width="[\d.]+"[^>]+style="([^"]+)"/g;
-    let match;
-
-    while ((match = rectRegex.exec(svgString)) !== null) {
-      const x = parseFloat(match[1]);
-      const y = parseFloat(match[2]);
-      const style = match[3];
-
-      if (style.includes("fill:#000000")) {
-        const cellX = Math.floor(x / cellSize);
-        const cellY = Math.floor(y / cellSize);
-        qrArray[cellY][cellX] = true;
+    // Find the smallest version that can contain the data
+    let version;
+    for (version = 0; version < 40; version++) {
+      if (capacities[ecl][version] >= bitLength) {
+        break;
       }
     }
 
-    return qrArray;
-  }
+    // Calculate the module size (each version increases by 4 modules per side)
+    const moduleSize = 21 + (version * 4);
 
+    return moduleSize;
+  }
 
   let config: QrConfig | null = null;
   qrConfigStore.subscribe(
     (currentConfig) => {
-      if (!project || !currentConfig || !currentConfig.value) return;
+      if (!currentConfig || !currentConfig.value) return;
       config = currentConfig;
 
       console.debug('current qr config', currentConfig);
@@ -65,456 +67,57 @@
         /************************************************************************
          QR CODE GENERATION & PREPARATION
          ************************************************************************/
-          // Create a new QRCode
+        const dimension = calculateQRSize(currentConfig.value, currentConfig.ecl);
+        const plottableQrSize = dimension * (config?.penMmSize || 0);
+        console.debug('qr dimension:', dimension)
+        plottableQrViewBox = `0 0 ${plottableQrSize} ${plottableQrSize}`;
+        // Create a new QRCode
         const qr = new QRCode({
-            content: currentConfig.value,
-            padding: 0,
-            width: 64,
-            height: 64,
-            color: '#000000',
-            background: '#ffffff',
-            ecl: currentConfig.ecl,
-            join: false,
-            predefined: false
-          });
+          content: currentConfig.value,
+          padding: 0,
+          width: dimension,
+          height: dimension,
+          color: '#000000',
+          background: '#ffffff',
+          ecl: currentConfig.ecl,
+          join: false,
+          predefined: false
+        });
 
-        // Generate the SVG string and import to paper
-        const svg = qr.svg();
-        console.debug('qr svg:', svg);
-        let qrData = svgToQRArray(svg);
-        console.debug('qr data:', qrData);
-        let paths = generateQrSVGPaths(qrData, 0.5, config?.overlap || false, config?.transparent || false);
+        let qrData = qr.qrcode.modules;
+        let paths = generateQrSVGPaths(qrData, config?.penMmSize || 0.5, config?.overlap || false, config?.transparent || false);
+        let totalPathLength = paths.pop(); // Remove the last path which is the total path length
+        console.log('---------------length:', totalPathLength);
+        const svg = `<svg width="${plottableQrSize}" height="${plottableQrSize}" viewBox="${plottableQrViewBox}" xmlns="http://www.w3.org/2000/svg">
+            ${paths.join('')}
+        </svg>`;
+        qrOutputStore.update(store => ({
+          ...store,
+          svg: svg,
+          outputInfo: `Total Path Length: ~${totalPathLength} mm<br/>QR Dimensions: ${plottableQrSize}x${plottableQrSize} mm`,
+          remark: 'generated'
+        }));
         if (paths && svgContainer) {
           svgContainer.innerHTML = paths.join('');
         }
-        project.clear();
-        project.view.play();
-        qrOutputStore.update(store => ({
-          ...store,
-          totalPathLength: 0,
-          remark: 'rendering'
-        }));
-
-        setTimeout(() => {
-          project.importSVG(svg);
-          project.view.play();
-          console.debug('project refresh requested');
-        }, 0);
       });
     }
   );
-
-  const PAPERJS_MM_TO_PT = 3.775;
-  const HOR_COLOR = 'orange';
-  const VERT_COLOR = 'green';
-
-  function hasBlockAt(blocks: paper.Path.Rectangle[], point: paper.PointLike): boolean {
-    return blocks.some((block) => block.contains(point));
-  }
-
-  onMount(() => {
-    paper.setup(canvas);
-    project = paper.project;
-
-    project.view.onFrame = (event: { time: number; delta: number; count: number }) => {
-      if (!config || !config.value || config.penMmSize <= 0) {
-        qrOutputStore.update(() => ({
-          svg: '',
-          totalPathLength: 0,
-          remark: 'Invalid configuration'
-        }));
-        return;
-      }
-      let warning = '';
-      console.debug('::onFrame::', 'time', event.time, 'delta', event.delta, 'count', event.count, 'config', config);
-      if (zoom !== 1) {
-        project.view.scale(1 / zoom);
-        zoom = 1;
-      }
-      const items = project.activeLayer.getItems({});
-      const width = 15 * PAPERJS_MM_TO_PT;
-      const height = 15 * PAPERJS_MM_TO_PT;
-
-      if (items.length > 0) {
-        project.clear();
-        console.debug('qr items loaded:', items.length);
-
-        // Target size rectangle
-        const targetRect = new paper.Path.Rectangle({
-          from: [0, 0],
-          to: [width, height],
-          strokeColor: 'black',
-          strokeWidth: 5
-        });
-
-        // Make rectangle objects for the items and group on size
-        const rectangleMap = new Map<number, paper.Path.Rectangle[]>();
-        for (const item of items) {
-          const rectangle = new paper.Path.Rectangle({
-            from: item.bounds.topLeft,
-            to: item.bounds.bottomRight,
-            strokeWidth: 1,
-            strokeColor: 'orange'
-          });
-          const width = parseFloat(rectangle.bounds.width.toFixed(8));
-          if (rectangleMap.has(width)) {
-            rectangleMap.get(width)?.push(rectangle);
-          } else {
-            rectangleMap.set(width, [rectangle]);
-          }
-        }
-
-        if (rectangleMap.size !== 2) {
-          console.warn('unexpected number of sizes', rectangleMap.size);
-        }
-
-        // Remove the large blocks and do some analysis
-        const qrFullSize = Math.max(...Array.from(rectangleMap.keys()));
-        const qrBlockSize = Math.min(...Array.from(rectangleMap.keys()));
-        const qrBlockDimensions = Math.floor(qrFullSize / qrBlockSize) + 1;
-        const bigBlocks = rectangleMap.get(qrFullSize) || [];
-        const qrBlocks = rectangleMap.get(qrBlockSize) || [];
-        rectangleMap.clear();
-        for (const rectangle of bigBlocks) {
-          rectangle.remove();
-        }
-        for (const rectangle of qrBlocks) {
-          rectangle.remove();
-        }
-        console.debug(
-          'qrFullSize',
-          qrFullSize,
-          'qrBlockSize',
-          qrBlockSize,
-          'qrBlockCount',
-          qrBlocks.length,
-          'qrBlockDimensions',
-          qrBlockDimensions
-        );
-
-        /************************************************************************
-         GROUPING BLOCKS HORIZONTALLY & VERTICALLY
-         ************************************************************************/
-
-        const targetBlockSize = width / qrBlockDimensions;
-        // In the first pass we group horizontally
-        let startX = -1;
-        let endX = -1;
-        const horizontalRectangles: paper.Path.Rectangle[] = [];
-        const singleRectangles: paper.Path.Rectangle[] = [];
-        for (let y = 0; y < qrBlockDimensions; y++) {
-          for (let x = 0; x < qrBlockDimensions; x++) {
-            const point = new paper.Point(
-              x * qrBlockSize + qrBlockSize / 2,
-              y * qrBlockSize + qrBlockSize / 2
-            );
-            if (hasBlockAt(qrBlocks, point)) {
-              if (startX < 0) startX = x;
-              endX = x;
-            } else {
-              if (startX >= 0 && endX >= 0) {
-                const r = new paper.Path.Rectangle({
-                  from: [startX * targetBlockSize, y * targetBlockSize],
-                  to: [(endX + 1) * targetBlockSize, (y + 1) * targetBlockSize],
-                  fillColor: HOR_COLOR,
-                  opacity: 0.5
-                });
-                if (startX == endX) {
-                  singleRectangles.push(r);
-                } else {
-                  horizontalRectangles.push(r);
-                }
-                startX = -1;
-                endX = -1;
-              }
-            }
-          }
-
-          if (startX >= 0 && endX >= 0) {
-            const r = new paper.Path.Rectangle({
-              from: [startX * targetBlockSize, y * targetBlockSize],
-              to: [(endX + 1) * targetBlockSize, (y + 1) * targetBlockSize],
-              fillColor: HOR_COLOR,
-              opacity: 0.5
-            });
-            if (startX == endX) {
-              singleRectangles.push(r);
-            } else {
-              horizontalRectangles.push(r);
-            }
-            startX = -1;
-            endX = -1;
-          }
-        }
-        console.debug(
-          'horizontalRectangles',
-          horizontalRectangles.length,
-          'singleRectangles',
-          singleRectangles.length
-        );
-
-        let startY = -1;
-        let endY = -1;
-        const verticalRectangles: paper.Path.Rectangle[] = [];
-        for (let x = 0; x < qrBlockDimensions; x++) {
-          for (let y = 0; y < qrBlockDimensions; y++) {
-            let hasBlock = false;
-            if (config.overlap) {
-              const point = new paper.Point(
-                x * qrBlockSize + qrBlockSize / 2,
-                y * qrBlockSize + qrBlockSize / 2
-              );
-              hasBlock = hasBlockAt(qrBlocks, point);
-            } else {
-              const point = new paper.Point(
-                x * targetBlockSize + targetBlockSize / 2,
-                y * targetBlockSize + targetBlockSize / 2
-              );
-              hasBlock = hasBlockAt(singleRectangles, point);
-            }
-            if (hasBlock) {
-              if (startY < 0) startY = y;
-              endY = y;
-            } else {
-              if (startY >= 0 && endY >= 0) {
-                if (
-                  startY !== endY ||
-                  !hasBlockAt(horizontalRectangles, [
-                    x * targetBlockSize + targetBlockSize / 2,
-                    startY * targetBlockSize + targetBlockSize / 2
-                  ])
-                ) {
-                  const r = new paper.Path.Rectangle({
-                    from: [x * targetBlockSize, startY * targetBlockSize],
-                    to: [(x + 1) * targetBlockSize, (endY + 1) * targetBlockSize],
-                    fillColor: VERT_COLOR,
-                    opacity: 0.5
-                  });
-                  verticalRectangles.push(r);
-                }
-                startY = -1;
-                endY = -1;
-              }
-            }
-          }
-          if (startY >= 0 && endY >= 0) {
-            if (
-              startY !== endY ||
-              !hasBlockAt(horizontalRectangles, [
-                x * targetBlockSize + targetBlockSize / 2,
-                startY * targetBlockSize + targetBlockSize / 2
-              ])
-            ) {
-              const r = new paper.Path.Rectangle({
-                from: [x * targetBlockSize, startY * targetBlockSize],
-                to: [(x + 1) * targetBlockSize, (endY + 1) * targetBlockSize],
-                fillColor: VERT_COLOR,
-                opacity: 0.5
-              });
-              verticalRectangles.push(r);
-            }
-            startY = -1;
-            endY = -1;
-          }
-        }
-        console.debug('verticalRectangles', verticalRectangles.length);
-        singleRectangles.forEach((r) => r.remove());
-        singleRectangles.length = 0;
-        targetRect.remove();
-
-        /************************************************************************
-         DRAWING THE ACTUAL PLOTTABLE LINES
-         ************************************************************************/
-
-        let penWidth = config.penMmSize * PAPERJS_MM_TO_PT;
-        if (penWidth > targetBlockSize) {
-          const penMMDisplay = config.penMmSize;
-          const targetMMDisplay = (targetBlockSize / PAPERJS_MM_TO_PT).toFixed(2);
-          if ((penMMDisplay - (targetBlockSize / PAPERJS_MM_TO_PT)) > 0.05) {
-            warning = 'Your pen is too big (' + penMMDisplay + ' mm > ' + targetMMDisplay + ' mm). The physical plot might look different.';
-            console.warn(warning);
-          }
-          penWidth = targetBlockSize;
-        }
-        const lines = Math.ceil(targetBlockSize / penWidth);
-        let totalLineLength = 0;
-        let lineHeight = targetBlockSize / lines;
-        if (lineHeight < 0) {
-          lineHeight = targetBlockSize;
-        }
-        console.debug(
-          'lines',
-          lines,
-          'lineHeight',
-          lineHeight,
-          'targetBlockSize',
-          targetBlockSize,
-          'penWidth',
-          penWidth
-        );
-        const strokeCap = 'round';
-        for (const rectangle of horizontalRectangles) {
-          const yStart = rectangle.bounds.y + penWidth / 2;
-          for (let l = 0; l < lines - 1; l++) {
-            const y = yStart + l * lineHeight;
-            const lh = new paper.Path.Line({
-              from: [rectangle.bounds.x + penWidth / 2, y],
-              to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
-              strokeColor: 'black',
-              strokeWidth: penWidth,
-              opacity: config?.transparent ? 0.5 : 1,
-              strokeCap: strokeCap
-            });
-            totalLineLength += lh.length;
-          }
-          // last line, start from bottom
-          const y = rectangle.bounds.y + rectangle.bounds.height - penWidth / 2;
-          const lh = new paper.Path.Line({
-            from: [rectangle.bounds.x + penWidth / 2, y],
-            to: [rectangle.bounds.x + rectangle.bounds.width - penWidth / 2, y],
-            strokeColor: 'black',
-            strokeWidth: penWidth,
-            opacity: config?.transparent ? 0.5 : 1,
-            strokeCap: strokeCap
-          });
-          totalLineLength += lh.length;
-          if (lines > 1) {
-            // add vertical lines at the ends
-            const vle = new paper.Path.Line({
-              from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
-              to: [
-                rectangle.bounds.x + penWidth / 2,
-                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-              ],
-              strokeColor: 'black',
-              strokeWidth: penWidth,
-              opacity: config?.transparent ? 0.5 : 1,
-              strokeCap: strokeCap
-            });
-            totalLineLength += vle.length;
-            const vleb = new paper.Path.Line({
-              from: [
-                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-                rectangle.bounds.y + penWidth / 2
-              ],
-              to: [
-                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-              ],
-              strokeColor: 'black',
-              strokeWidth: penWidth,
-              opacity: config?.transparent ? 0.5 : 1,
-              strokeCap: strokeCap
-            });
-            totalLineLength += vleb.length;
-          }
-          rectangle.remove();
-        }
-
-        for (const rectangle of verticalRectangles) {
-          for (let l = 0; l < lines - 1; l++) {
-            const x = rectangle.bounds.left + l * lineHeight + penWidth / 2;
-            const lv = new paper.Path.Line({
-              from: [x, rectangle.bounds.y + penWidth / 2],
-              to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
-              strokeColor: 'black',
-              strokeWidth: penWidth,
-              opacity: config?.transparent ? 0.5 : 1,
-              strokeCap: strokeCap
-            });
-            totalLineLength += lv.length;
-          }
-          // last line, start from right
-          const x = rectangle.bounds.left + rectangle.bounds.width - penWidth / 2;
-          const lv = new paper.Path.Line({
-            from: [x, rectangle.bounds.y + penWidth / 2],
-            to: [x, rectangle.bounds.y + rectangle.bounds.height - penWidth / 2],
-            strokeColor: 'black',
-            strokeWidth: penWidth,
-            opacity: config?.transparent ? 0.5 : 1,
-            strokeCap: strokeCap
-          });
-          totalLineLength += lv.length;
-          if (lines > 1) {
-            // add horizontal lines at the ends
-            const lhe = new paper.Path.Line({
-              from: [rectangle.bounds.x + penWidth / 2, rectangle.bounds.y + penWidth / 2],
-              to: [
-                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-                rectangle.bounds.y + penWidth / 2
-              ],
-              strokeColor: 'black',
-              strokeWidth: penWidth,
-              opacity: 0.5,
-              strokeCap: strokeCap
-            });
-            totalLineLength += lhe.length;
-            const lheb = new paper.Path.Line({
-              from: [
-                rectangle.bounds.x + penWidth / 2,
-                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-              ],
-              to: [
-                rectangle.bounds.x + rectangle.bounds.width - penWidth / 2,
-                rectangle.bounds.y + rectangle.bounds.height - penWidth / 2
-              ],
-              strokeColor: 'black',
-              strokeWidth: penWidth,
-              opacity: config?.transparent ? 0.5 : 1,
-              strokeCap: strokeCap
-            });
-            totalLineLength += lheb.length;
-          }
-          rectangle.remove();
-        }
-
-        project.activeLayer.position = project.view.center;
-        // // Get the bounds of the largest project layer
-        const projectSize = Math.max(project.activeLayer.bounds.width, project.activeLayer.bounds.height);
-        const viewSize = Math.min(project.view.bounds.width, project.view.bounds.height) * 0.9;
-        let exportedSvg = project.exportSVG({asString: true});
-        zoom = viewSize / projectSize;
-        project.view.scale(zoom);
-        qrOutputStore.update(store => ({
-          ...store,
-          svg: exportedSvg,
-          totalPathLength: totalLineLength / PAPERJS_MM_TO_PT,
-          remark: warning
-        }));
-      }
-      project.view.pause();
-    };
-  });
 </script>
-
-<canvas id="qr-canvas" bind:this={canvas} data-paper-hidpi="off"></canvas>
 
 <svg class="qr-svg" viewBox={plottableQrViewBox} bind:this={svgContainer}>
 </svg>
 
 <style>
-    #qr-canvas {
-        display: block;
-        width: calc(100vw - 42rem);
-        max-width: 50rem;
-        aspect-ratio: 1;
-        background-color: white;
-        border-radius: .5rem;
-    }
-
-    @media (max-width: 850px) {
-        #qr-canvas {
-            width: 100%;
-        }
-    }
-
     .qr-svg {
         display: block;
         width: calc(100vw - 42rem);
         max-width: 50rem;
         aspect-ratio: 1;
         background-color: white;
-        border-radius: .5rem;
+        border-radius: 1rem;
+        border-color: white;
+        border-width: 1rem;
     }
 
     @media (max-width: 850px) {

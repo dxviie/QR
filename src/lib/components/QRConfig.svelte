@@ -7,14 +7,15 @@
   import type {QrConfig} from "$lib/qr";
   import {onMount} from "svelte";
   import {Github} from "lucide-svelte";
+  import {Textarea} from "$lib/components/ui/textarea/index.js";
 
   // Subscribe to the store to get the initial values
   let qrConfig: QrConfig = {
     value: 'https://qr.d17e.dev/',
     ecl: 'L',
     penMmSize: .5,
-    overlap: false,
-    transparent: true
+    overlap: true,
+    transparent: false
   };
 
   qrConfigStore.subscribe(value => {
@@ -73,7 +74,7 @@
 <div class="flex w-full max-w-sm flex-col gap-2">
   <div>
     <Label for="value">QR Text</Label>
-    <Input type="text" id="value" value={qrConfig.value} on:change={handleQrTextChange}/>
+    <Textarea id="value" value={qrConfig.value} on:change={handleQrTextChange}/>
   </div>
 
   <div>
@@ -96,7 +97,7 @@
     <Input type="number" id="penMmSize" min="0.05" step="0.05" value={qrConfig.penMmSize} on:change={handlePenMmSizeChange}/>
   </div>
 
-  <div class="flex flex-col items-baseline gap-2.5 space-x-2 mt-2">
+  <div class="bottom-config">
     <div>
       <Checkbox id="overlap" aria-labelledby="overlap-label" checked={qrConfig.overlap}
                 onCheckedChange={(checked) => updateOverlap(checked)}/>
@@ -122,7 +123,16 @@
 </div>
 
 <style>
+    .bottom-config {
+        display: flex;
+        flex-direction: column;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+        gap: 1rem;
+    }
+
     .linky {
+        margin-top: 1rem;
         display: flex;
         align-items: center;
         gap: 0.5rem;

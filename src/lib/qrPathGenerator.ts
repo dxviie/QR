@@ -20,7 +20,11 @@ export function generateQrSVGPaths(
 		penWidth: number,
 		transparent: boolean
 	): string {
-		return `<path d="M${startX},${startY}H${endX}V${endY}" fill="none" stroke="black" stroke-width=${penWidth} stroke-linecap="round" opacity="${transparent ? 0.5 : 1}"/>`;
+		return `<path d="M${startX},${startY}H${endX}V${endY}" fill="none" stroke="black" stroke-width="${penWidth}" stroke-linecap="round" opacity="${transparent ? 0.5 : 1}"/>`;
+	}
+
+	function calculatePathLength(startX: number, startY: number, endX: number, endY: number): number {
+		return Math.sqrt((endX - startX) ** 2 + (endY - startY) ** 2);
 	}
 
 	function visitRow(visited: boolean[][], y: number, startX: number, endX: number) {
@@ -35,6 +39,7 @@ export function generateQrSVGPaths(
 		}
 	}
 
+	let totalPathLength = 0;
 	// Scan horizontally
 	for (let y = 0; y < height; y++) {
 		let startX = null;
@@ -54,6 +59,12 @@ export function generateQrSVGPaths(
 							transparent
 						)
 					);
+					totalPathLength += calculatePathLength(
+						startX * penWidth + pathAdjustment,
+						y * penWidth + pathAdjustment,
+						(endX + 1) * penWidth - pathAdjustment,
+						y * penWidth + pathAdjustment
+					);
 					visitRow(visited, y, startX, endX);
 				}
 				startX = null;
@@ -68,11 +79,10 @@ export function generateQrSVGPaths(
 			if (qrData[y][x] && startY === null && (!visited[y][x] || overlap)) {
 				startY = y;
 			} else if (
-				(!qrData[y][x] || y === height - 1 || (visited[x][y] && !overlap)) &&
-				startY !== null &&
-				(!visited[y][x] || overlap)
+				(!qrData[y][x] || y === height - 1 || (visited[y][x] && !overlap)) &&
+				startY !== null
 			) {
-				const endY = qrData[y][x] ? y : y - 1;
+				const endY = qrData[y][x] ? (overlap ? y : y - 1) : y - 1;
 				if (startY !== endY) {
 					paths.push(
 						createPath(
@@ -83,6 +93,12 @@ export function generateQrSVGPaths(
 							penWidth,
 							transparent
 						)
+					);
+					totalPathLength += calculatePathLength(
+						x * penWidth + pathAdjustment,
+						startY * penWidth + pathAdjustment,
+						x * penWidth + pathAdjustment,
+						(endY + 1) * penWidth - pathAdjustment
 					);
 					visitColumn(visited, x, startY, endY);
 				}
@@ -104,8 +120,15 @@ export function generateQrSVGPaths(
 						transparent
 					)
 				);
+				totalPathLength += calculatePathLength(
+					x * penWidth + pathAdjustment,
+					y * penWidth + pathAdjustment,
+					x * penWidth + penWidth - pathAdjustment,
+					y * penWidth + pathAdjustment
+				);
 			}
 		}
 	}
+	paths.push(totalPathLength.toFixed(0));
 	return paths;
 }

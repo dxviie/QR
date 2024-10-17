@@ -5,12 +5,12 @@ export const qrConfigStore = writable<QrConfig>({
 	value: 'https://qr.d17e.dev/',
 	ecl: 'L',
 	penMmSize: 0.6,
-	overlap: false,
-	transparent: true
+	overlap: true,
+	transparent: false
 });
 
 export const qrOutputStore = writable<QrOutput>({
 	svg: '',
-	totalPathLength: 0,
+	outputInfo: '',
 	remark: ''
 });
