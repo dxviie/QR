@@ -1,6 +1,5 @@
 <script lang="ts">
   import {Button} from "$lib/components/ui/button";
-  import {Video} from "lucide-svelte";
 </script>
 
 <div class="content">
@@ -22,7 +21,7 @@
     And here it is in action at 1.38x the actual speed to fit into 30 seconds (~39 seconds actual plotting time):
   </p>
   <video controls muted>
-    <source src="qr-plot-reel-square.mp4" type={"video/mp4"}/>
+    <source src="qr-plot-reel-square.mp4#t=0.1" type={"video/mp4"}/>
   </video>
   <p class="intro">
     The <a href="https://github.com/dxviie/QR" target="_blank">code is on my github</a> code is on my github, use at your own
@@ -31,8 +30,12 @@
           href="https://forms.d17e.dev/contact" target="_blank">get
     in touch</a> and let's have a chat!
   </p>
-  <Button class="mt-16 mb-16">
-    <a href="/create">Generate QR</a>
+  <Button class="mt-16 mb-6">
+    <a href="/">Generate QR</a>
+  </Button>
+  or
+  <Button class="mt-6 mb-16">
+    <a href="/astley">Turn an Existing Image of a QR into A Plottable QR SVG</a>
   </Button>
 </div>
 
