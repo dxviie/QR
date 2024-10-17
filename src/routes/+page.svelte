@@ -34,21 +34,14 @@
   <div class="controls {$mode}">
     {#if qrOutput.svg}
       <Card.Root>
-        <Card.Header>
-        </Card.Header>
         <Card.Content>
+          <div class="mt-5"/>
           <QROutput/>
         </Card.Content>
-        <Card.Footer>
-        </Card.Footer>
       </Card.Root>
     {/if}
 
     <Card.Root>
-      <Card.Header>
-        <Card.Title tag="h6">Configuration</Card.Title>
-        <Card.Description></Card.Description>
-      </Card.Header>
       <Card.Content>
         <QRConfig/>
       </Card.Content>

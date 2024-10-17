@@ -74,9 +74,7 @@
         qrData.push(row);
       }
       qrPaths = generateQrSVGPaths(qrData, penWidth, overlap, transparent);
-      console.log('paths', qrPaths);
       if (svgContainer) {
-        console.log('svgContainer', svgContainer);
         svgContainer.innerHTML = qrPaths.join('');
       }
       const size = resolution * penWidth;
@@ -118,51 +116,22 @@
     <div class="input">
 
       {#if imagePreview}
-        <h3>Input Frame:</h3>
-        <img src={imagePreview} alt="Uploaded QR Code" width={svgOutputSize} height={svgOutputSize}>
+        <h3>Input Image:</h3>
+        <img src={imagePreview} alt="Uploaded QR Code" width={svgOutputSize} height={svgOutputSize} class="mt-2">
       {/if}
     </div>
-
-    {#if qrData && qrData.length > 0}
-      <div class="html-output">
-        <h3>HTML Table Output:</h3>
-        <table>
-          {#each qrData as row}
-            <tr>
-              {#each row as cell}
-                <td class:black={cell} class:white={!cell}></td>
-              {/each}
-            </tr>
-          {/each}
-        </table>
-      </div>
-    {/if}
   </div>
   <div class="header">
     <div>
-      {#if qrData && qrData.length > 0}
-        <h3>RAW SVG Output (rects):</h3>
-        <svg width={svgOutputSize} height={svgOutputSize} viewBox={`0 0 ${resolution} ${resolution}`}>
-          {#each qrData as row, y}
-            {#each row as cell, x}
-              {#if cell}
-                <rect x={x} y={y} width="1" height="1"/>
-              {/if}
-            {/each}
-          {/each}
-        </svg>
-      {/if}
-    </div>
-    <div>
       {#if qrPaths && qrPaths.length > 0}
-        <h3>Plottable SVG Output (paths):</h3>
+        <h3>Plottable SVG Output:</h3>
       {/if}
-      <svg width={svgOutputSize} height={svgOutputSize} viewBox={plottableQrViewBox} bind:this={svgContainer}>
+      <svg width={svgOutputSize} height={svgOutputSize} viewBox={plottableQrViewBox} bind:this={svgContainer} class="mt-2">
       </svg>
     </div>
   </div>
 
-  <div class="header">
+  <div class="header mt-6 mb-6">
     {#if qrPaths && qrPaths.length > 0}
       <Button on:click={downloadPlottableSVG}>Download Plottable SVG</Button>
     {/if}

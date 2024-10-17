@@ -87,7 +87,6 @@
         let qrData = qr.qrcode.modules;
         let paths = generateQrSVGPaths(qrData, config?.penMmSize || 0.5, config?.overlap || false, config?.transparent || false);
         let totalPathLength = paths.pop(); // Remove the last path which is the total path length
-        console.log('---------------length:', totalPathLength);
         const svg = `<svg width="${plottableQrSize}" height="${plottableQrSize}" viewBox="${plottableQrViewBox}" xmlns="http://www.w3.org/2000/svg">
             ${paths.join('')}
         </svg>`;
