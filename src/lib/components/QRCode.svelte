@@ -1,5 +1,4 @@
 <script lang="ts">
-
   import {qrConfigStore, qrOutputStore} from "$lib/qrStore";
   import type {QrConfig} from "$lib/qr";
   import {generateQrSVGPaths} from "$lib/qrPathGenerator";
