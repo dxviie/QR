@@ -8,16 +8,6 @@
   let plottableQrViewBox = "0 0 0 0";
 
   function calculateQRSize(text, ecl) {
-    // Estimate the mode based on the content
-    let mode;
-    if (/^[0-9]+$/.test(text)) {
-      mode = 'numeric';
-    } else if (/^[A-Z0-9 $%*+\-./:]+$/.test(text)) {
-      mode = 'alphanumeric';
-    } else {
-      mode = 'byte';
-    }
-
     // Capacity in bits for each version and ECL
     const capacities = {
       'L': [152, 272, 440, 640, 864, 1088, 1248, 1552, 1856, 2192, 2592, 2960, 3424, 3688, 4184, 4712, 5176, 5768, 6360, 6888, 7456, 8048, 8752, 9392, 10208, 10960, 11744, 12248, 13048, 13880, 14744, 15640, 16568, 17528, 18448, 19472, 20528, 21616, 22496, 23648],
@@ -27,18 +17,7 @@
     };
 
     // Calculate the bit length of the data
-    let bitLength;
-    switch (mode) {
-      case 'numeric':
-        bitLength = Math.ceil(text.length * 3.33);
-        break;
-      case 'alphanumeric':
-        bitLength = Math.ceil(text.length * 6);
-        break;
-      case 'byte':
-      default:
-        bitLength = text.length * 8;
-    }
+    let bitLength = Math.ceil(text.length * 8);
 
     // Find the smallest version that can contain the data
     let version;
@@ -47,10 +26,8 @@
         break;
       }
     }
-
     // Calculate the module size (each version increases by 4 modules per side)
     const moduleSize = 21 + (version * 4);
-
     return moduleSize;
   }
 
@@ -67,12 +44,12 @@
         /************************************************************************
          QR CODE GENERATION & PREPARATION
          ************************************************************************/
-        const dimension = calculateQRSize(currentConfig.value, currentConfig.ecl);
-        const plottableQrSize = dimension * (config?.penMmSize || 0);
-        console.debug('qr dimension:', dimension)
+        let dimension = calculateQRSize(currentConfig.value, currentConfig.ecl);
+        let plottableQrSize = dimension * (config?.penMmSize || 0);
         plottableQrViewBox = `0 0 ${plottableQrSize} ${plottableQrSize}`;
+        console.debug('qr dimension:', dimension)
         // Create a new QRCode
-        const qr = new QRCode({
+        let qr = new QRCode({
           content: currentConfig.value,
           padding: 0,
           width: dimension,
@@ -85,6 +62,23 @@
         });
 
         let qrData = qr.qrcode.modules;
+        if (qrData && qrData.length > dimension) {
+          dimension = qrData.length;
+          plottableQrSize = dimension * (config?.penMmSize || 0);
+          plottableQrViewBox = `0 0 ${plottableQrSize} ${plottableQrSize}`;
+          console.debug('initial qr dimension too small. adjusting to:', dimension)
+          qr = new QRCode({
+            content: currentConfig.value,
+            padding: 0,
+            width: dimension,
+            height: dimension,
+            color: '#000000',
+            background: '#ffffff',
+            ecl: currentConfig.ecl,
+            join: false,
+            predefined: false
+          });
+        }
         let paths = generateQrSVGPaths(qrData, config?.penMmSize || 0.5, config?.overlap || false, config?.transparent || false);
         let totalPathLength = paths.pop(); // Remove the last path which is the total path length
         const svg = `<svg width="${plottableQrSize}" height="${plottableQrSize}" viewBox="${plottableQrViewBox}" xmlns="http://www.w3.org/2000/svg">
