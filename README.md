@@ -5,6 +5,8 @@
 This project attempts to solve 1 problem and 1 problem only: generating QR codes that can be efficiently plotted by pen plotters. Or
 anything that takes an SVG for that matter.
 
+Visit this project at [qr.d17e.dev](https://qr.d17e.dev) 🟢
+
 ## Main Dependencies
 
 - Svelte+SvelteKit as the backbone
