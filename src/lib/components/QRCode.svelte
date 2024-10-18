@@ -22,7 +22,6 @@
         let dimension = 21;
         let plottableQrSize = dimension * (config?.penMmSize || 0);
         plottableQrViewBox = `0 0 ${plottableQrSize} ${plottableQrSize}`;
-        console.debug('qr dimension:', dimension)
         // Create a new QRCode
         let qr = new QRCode({
           content: currentConfig.value,

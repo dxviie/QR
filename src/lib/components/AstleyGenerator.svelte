@@ -126,7 +126,8 @@
       {#if qrPaths && qrPaths.length > 0}
         <h3>Plottable SVG Output:</h3>
       {/if}
-      <svg width={svgOutputSize} height={svgOutputSize} viewBox={plottableQrViewBox} bind:this={svgContainer} class="mt-2">
+      <svg width={`calc(${svgOutputSize}px + 2rem)`} height={`calc(${svgOutputSize}px + 2rem)`} viewBox={plottableQrViewBox}
+           bind:this={svgContainer} class="mt-2">
       </svg>
     </div>
   </div>
@@ -137,14 +138,31 @@
     {/if}
   </div>
 
+  <div class="header mt-6 mb-6">
+    <p>This image to plottable SVG conversion is very bare-bones by design. It was really just made to turn pictures of QR codes into
+      plottable QR codes. It just doesn't care much if you actually feed it a QR or not and <i>works</i> either way.<br/><br/>
+      In case you're in the market for something more elaborate to turn images into plottable SVGs you can check my other little project <a
+              href="https://rstr.d17e.dev">RSTR</a>.
+    </p>
+    <Button on:click={() => window.location.href = 'https://rstr.d17e.dev'}>Visit RSTR</Button>
+  </div>
 </div>
 
 <style>
+    svg {
+        background-color: white;
+        border-radius: 1rem;
+        border-width: 1rem;
+        border-color: white;
+    }
+
     .generator {
         margin-top: 3rem;
         display: flex;
         flex-direction: column;
         gap: 1rem;
+        width: 90vw;
+        max-width: 30rem;
     }
 
     .header {
@@ -180,23 +198,5 @@
         .resolution-input {
             width: 85vw;
         }
-    }
-
-    table {
-        border-collapse: collapse;
-    }
-
-    td {
-        width: 4px;
-        height: 4px;
-        padding: 0;
-    }
-
-    .black {
-        background-color: black;
-    }
-
-    .white {
-        background-color: white;
     }
 </style>

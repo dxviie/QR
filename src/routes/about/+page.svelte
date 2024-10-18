@@ -20,23 +20,26 @@
   </p>
   <img src="qr-detail-working-2024-10-17 191118.png" alt="Functional QR Code With Ruler For Scale"/>
   <p class="intro">
-    And below it is in action at 1.38x the actual speed to fit into 30 seconds (~39 seconds actual plotting time):
+    And below it is in action at 1.38x the actual speed to fit into a 30 second clip. In real time this took ~39 seconds to plot.
+    As you might be able to tell I pushed the speed settings on the Axidraw towards the maximum for this test. For reference, on my regular
+    speed settings
+    (relatively slow) the same code still only took about ~42 seconds.
   </p>
   <video controls muted>
     <source src="qr-plot-reel-square.mp4#t=0.1" type={"video/mp4"}/>
   </video>
   <p class="intro">
-    The <a href="https://github.com/dxviie/QR" target="_blank">source code</a> for this entire project is on my github.<br/><br/>
+    The <a href="https://github.com/dxviie/QR" target="_blank">source code</a> for this <i>entire</i> project is on my github.<br/><br/>
     In case you have some ideas, feedback or just want to say hi, I'd love to hear from you! Please do <a
           href="https://forms.d17e.dev/contact" target="_blank">get
     in touch</a> and let's have a chat!
   </p>
-  <Button class="mt-16 mb-6">
-    <a href="/">Generate QR</a>
+  <Button on:click={() => window.location.href = '/'} class="mt-16 mb-6">
+    Generate QR
   </Button>
   or
-  <Button class="mt-6 mb-16">
-    <a href="/astley">Convert Image to Plottable SVG</a>
+  <Button on:click={() => window.location.href = '/astley'} class="mt-6 mb-16">
+    Convert Image to Plottable SVG
   </Button>
 </div>
 
