@@ -10,7 +10,7 @@
     I'm David Vandenbogaerde, or <i><a href="https://www.d17e.dev" target="_blank">d17e</a></i> for short. A software engineer and budding
     artist residing in Amsterdam.<br/><br/>
     Not so long ago I wanted to plot QR codes on my <a href="https://www.axidraw.com">Axidraw</a>, only to realise it wasn't exactly
-    straight forward. In fact, this is what the first attempt using available libraries and tools looked like:
+    straight forward. In fact, this is what my first attempt looked like:
   </p>
   <img src="first_attempt_plotting_qr.jpg" alt="First attempt at plotting QR code on Axidraw"/>
   <p class="intro">
