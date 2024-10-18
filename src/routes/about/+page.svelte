@@ -4,6 +4,7 @@
 
 <div class="content">
 
+  
   <p class="intro">
     <b>Hi! :)</b><br/><br/>
     I'm David Vandenbogaerde, or <i><a href="https://www.d17e.dev" target="_blank">d17e</a></i> for short. A software engineer and budding
