@@ -1,6 +1,6 @@
 {
-  "name": "qr",
-  "version": "0.0.1",
+  "name": "qr.d17e.dev",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "dev": "vite dev",
