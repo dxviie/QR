@@ -6,7 +6,6 @@
   import {qrConfigStore} from "$lib/qrStore";
   import type {QrConfig} from "$lib/qr";
   import {onMount} from "svelte";
-  import {Github} from "lucide-svelte";
   import {Textarea} from "$lib/components/ui/textarea/index.js";
 
   // Subscribe to the store to get the initial values
@@ -113,10 +112,15 @@
       </Label>
     </div>
     <div class="linky">
-      <Github class="w-6 h-6"/>
+      <p>💾</p>
       <a href="https://github.com/dxviie/QR" target="_blank">
-
         Source Code
+      </a>
+    </div>
+    <div class="linky">
+      <p>🤖</p>
+      <a href="https://www.val.town/v/d17e/qrCodeWebhook" target="_blank">
+        Need an API?
       </a>
     </div>
   </div>
