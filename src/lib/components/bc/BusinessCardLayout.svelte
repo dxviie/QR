@@ -169,6 +169,15 @@
 
   function downloadSVG() {
     const svg = document.querySelector('.layout-svg');
+    if (!svg) {
+      console.error('SVG not found');
+      return;
+    }
+    // remove all rects from SVG
+    svg.querySelectorAll('rect').forEach(rect => rect.remove());
+    // remove all the defs and images from SVG
+    svg.querySelectorAll('defs').forEach(defs => defs.remove());
+
     const svgData = new XMLSerializer().serializeToString(svg);
     const blob = new Blob([svgData], {type: 'image/svg+xml'});
     const url = URL.createObjectURL(blob);
@@ -206,40 +215,78 @@
       <!-- Use the flipped image as background -->
       <use href="#flipped-image"/>
 
-      <!-- Generate grid of business cards -->
-      {#each Array(cardsY) as _, row}
-        {#each Array(cardsX) as _, col}
+      <g id="cutting-lines">
+        <!-- Drawing cutting marks      -->
+        <!--   Horizontal Top   -->
+        <path d={`M ${startX - 10},${startY + offsetY} L ${startX - 5},${startY + offsetY}`} stroke="black" fill="none"/>
+        <path d={`M ${startX + (cardSizeX * cardsX) + 5},${startY + offsetY} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY}`}
+              stroke="black" fill="none"/>
+        <!--   Horizontal Bottom   -->
+        <path d={`M ${startX - 10},${startY + offsetY + (cardSizeY * cardsY)} L ${startX - 5},${startY + offsetY + (cardSizeY * cardsY)}`}
+              stroke="black" fill="none"/>
+        <path d={`M ${startX + (cardSizeX * cardsX) + 5},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY + (cardSizeY * cardsY)}`}
+              stroke="black" fill="none"/>
+        <!--   Vertical Left   -->
+        <path d={`M ${startX},${startY + offsetY - 10} L ${startX},${startY + offsetY - 5}`} stroke="black" fill="none"/>
+        <path d={`M ${startX},${startY + offsetY + (cardSizeY * cardsY) + 5} L ${startX},${startY + offsetY + (cardSizeY * cardsY) + 10}`}
+              stroke="black" fill="none"/>
+        <!--   Vertical Right   -->
+        <path d={`M ${startX + (cardSizeX * cardsX)},${startY + offsetY - 10} L ${startX + (cardSizeX * cardsX)},${startY + offsetY - 5}`}
+              stroke="black" fill="none"/>
+        <path d={`M ${startX + (cardSizeX * cardsX)},${startY + offsetY + (cardSizeY * cardsY) + 5} L ${startX + (cardSizeX * cardsX)},${startY + offsetY + (cardSizeY * cardsY) + 10}`}
+              stroke="black" fill="none"/>
+      </g>
 
-          <rect
-                  x={startX + (col * cardSizeX)}
-                  y={offsetY + startY + (row * cardSizeY)}
-                  width={cardSizeX}
-                  height={cardSizeY}
-                  stroke="#000000FF"
-                  stroke-width=".05mm"
-                  fill="#FFFFFFDD">
-          </rect>
+      <g id="card-rects">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            <rect
+                    x={startX + (col * cardSizeX)}
+                    y={startY + offsetY + (row * cardSizeY)}
+                    width={cardSizeX}
+                    height={cardSizeY}
+                    fill="#FFFFFFBB"
+                    stroke="black"
+                    stroke-width=".05"
+            />
+          {/each}
+        {/each}
+      </g>
 
-          {#if qrCodes && qrCodes[row * cardsX + col]}
-            <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 5})`}>
-              {@html qrCodes[row * cardsX + col].svg}
-            </g>
-            <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>
-              {@html qrCodes[row * cardsX + col].textPath}
-            </g>
-          {/if}
+      <g id="qr-codes">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            {#if qrCodes && qrCodes[row * cardsX + col]}
+              <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 5})`}>
+                {@html qrCodes[row * cardsX + col].svg}
+              </g>
+            {/if}
+          {/each}
+        {/each}
+      </g>
 
+      <g id="qr-text">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            {#if qrCodes && qrCodes[row * cardsX + col]}
+              <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>
+                {@html qrCodes[row * cardsX + col].textPath}
+              </g>
+            {/if}
+          {/each}
+        {/each}
+      </g>
 
-          {#if qrCodes}
-            <g transform="translate({startX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})
-          "
+      <g id="logos">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            <g transform="translate({startX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})"
                stroke-width="20">
               {@html flattenSVGToPaths(HatchedLogo)}
             </g>
-          {/if}
-
+          {/each}
         {/each}
-      {/each}
+      </g>
     </svg>
   {/if}
 </div>

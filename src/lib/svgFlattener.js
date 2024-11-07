@@ -36,6 +36,7 @@ export function flattenSVGToPaths(svgString) {
                 ${element.getAttribute('fill') ? `fill="${element.getAttribute('fill')}"` : ''}
                 ${element.getAttribute('stroke') ? `stroke="${element.getAttribute('stroke')}"` : ''}
                 ${element.getAttribute('stroke-width') ? `stroke-width="${element.getAttribute('stroke-width')}"` : ''}
+                ${element.getAttribute('stroke-linecap') ? `stroke-linecap="${element.getAttribute('stroke-linecap')}"` : ''}
             />`);
 		} else {
 			// Process other elements' children
