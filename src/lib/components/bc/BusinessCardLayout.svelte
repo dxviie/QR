@@ -1,10 +1,13 @@
 <script lang="ts">
+  import {Button} from "$lib/components/ui/button";
+
   export let imageUrl: string | null = null;
   export let orientation: 'portrait' | 'landscape' = 'portrait';
   export let offsetY = 0;
 
-  import HatchedLogo from '$lib/components/bc/logo-d17e-hatched.svg?raw';
+  import HatchedLogo from '$lib/components/bc/logo-d17e-hatched-optimized.svg?raw';
   import EMSReadability from '$lib/components/bc/EMSReadability.svg?raw';
+  import {flattenSVGToPaths} from "$lib/svgFlattener";
 
   let glyphMap;
 
@@ -57,6 +60,7 @@
     logoHeight = (LOGO_HEIGHT / LOGO_WIDTH) * logoWidth;
     logoOffsetTop = cardSizeY - 5 - logoHeight;
     qrCount = cardsX * cardsY;
+    console.debug('startX', startX, 'startY', startY, 'logoWidth', logoWidth, 'logoHeight', logoHeight, 'logoOffsetTop', logoOffsetTop, 'qrCount', qrCount)
   }
 
   $: {
@@ -110,8 +114,9 @@
       const randomString = generateRandomString();
       const textPath = textToPath(`qr.d17e.dev/bc/${randomString}`, 0, 0, glyphMap);
       const svg = await makeAPICall(randomString);
+      const svgPaths = flattenSVGToPaths(svg);
       return {
-        svg: svg,
+        svg: svgPaths,
         code: randomString,
         textPath: textPath
       };
@@ -161,9 +166,23 @@
 
     return paths.join('\n');
   }
+
+  function downloadSVG() {
+    const svg = document.querySelector('.layout-svg');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const blob = new Blob([svgData], {type: 'image/svg+xml'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'business-cards.svg';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
 </script>
 
 <div class="layout-container">
+  <Button on:click={downloadSVG}>Download SVG</Button>
   {#if imageUrl}
     <svg
             width={`${dimensions.width}mm`}
@@ -182,7 +201,6 @@
                   transform="scale(-1, 1) translate(-{dimensions.width}, 0)"
           />
         </g>
-        {@html HatchedLogo}
       </defs>
 
       <!-- Use the flipped image as background -->
@@ -198,7 +216,7 @@
                   width={cardSizeX}
                   height={cardSizeY}
                   stroke="#000000FF"
-                  stroke-width=".3mm"
+                  stroke-width=".05mm"
                   fill="#FFFFFFDD">
           </rect>
 
@@ -212,14 +230,13 @@
           {/if}
 
 
-          <use
-                  href="#d17e-hatched-logo"
-                  x={startX + (col * cardSizeX) + 5}
-                  y={offsetY + startY + logoOffsetTop + (row * cardSizeY)}
-                  width={logoWidth}
-                  height={logoHeight}
-                  preserveAspectRatio="xMidYMid meet"
-          />
+          {#if qrCodes}
+            <g transform="translate({startX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})
+          "
+               stroke-width="20">
+              {@html flattenSVGToPaths(HatchedLogo)}
+            </g>
+          {/if}
 
         {/each}
       {/each}
@@ -230,6 +247,8 @@
 <style>
     .layout-container {
         display: flex;
+        flex-direction: column;
+        align-items: center;
     }
 
     .layout-svg {
