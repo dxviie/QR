@@ -4,6 +4,9 @@
   export let offsetY = 0;
 
   import HatchedLogo from '$lib/components/bc/logo-d17e-hatched.svg?raw';
+  import EMSReadability from '$lib/components/bc/EMSReadability.svg?raw';
+
+  let glyphMap;
 
   // A3 dimensions in millimeters
   const A3_WIDTH = 420;
@@ -60,7 +63,10 @@
     if (qrCount !== prevQrCount) {
       (async () => {
         try {
-          qrCodes = await generateQRCodes(qrCount);
+          if (!glyphMap) {
+            glyphMap = parseGlyphs(EMSReadability);
+          }
+          qrCodes = await generateBusinessCards(qrCount);
           prevQrCount = qrCount;
           console.debug('qrCodes', qrCodes);
         } catch (error) {
@@ -70,7 +76,7 @@
     }
   }
 
-  async function generateQRCodes(count: number) {
+  async function generateBusinessCards(count: number) {
     // Function to generate random 6-char alphanumeric string
     function generateRandomString() {
       const chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -102,15 +108,58 @@
     // Generate array of promises
     const promises = Array.from({length: count}, async () => {
       const randomString = generateRandomString();
+      const textPath = textToPath(`qr.d17e.dev/bc/${randomString}`, 0, 0, glyphMap);
       const svg = await makeAPICall(randomString);
       return {
         svg: svg,
-        code: randomString
+        code: randomString,
+        textPath: textPath
       };
     });
 
     // Wait for all promises to resolve
     return Promise.all(promises);
+  }
+
+  function parseGlyphs(fontDefs) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(fontDefs, 'text/xml');
+    const glyphMap = new Map();
+
+    doc.querySelectorAll('glyph').forEach(glyph => {
+      const unicode = glyph.getAttribute('unicode');
+      const d = glyph.getAttribute('d');
+      if (unicode && d) {
+        glyphMap.set(unicode, {
+          pathData: d,
+          width: parseFloat(glyph.getAttribute('horiz-adv-x')) || 378 // default from font-face
+        });
+      }
+    });
+
+    console.debug('glyphMap', glyphMap);
+    return glyphMap;
+  }
+
+  function textToPath(text, x = 0, y = 0, glyphMap, scale = 0.0025) { // Added scale parameter
+    let currentX = x;
+    const paths = [];
+
+    for (const char of text) {
+      const glyph = glyphMap.get(char);
+      if (glyph) {
+        paths.push(`<path
+                d="${glyph.pathData}"
+                transform="translate(${currentX}, ${y}) scale(${scale}, ${-scale})"
+                fill="none"
+                stroke="black"
+                stroke-width="100"
+            />`);
+        currentX += glyph.width * scale; // Scale the spacing too
+      }
+    }
+
+    return paths.join('\n');
   }
 </script>
 
@@ -130,7 +179,7 @@
                   href={imageUrl}
                   width="100%"
                   height="100%"
-                  
+                  transform="scale(-1, 1) translate(-{dimensions.width}, 0)"
           />
         </g>
         {@html HatchedLogo}
@@ -156,6 +205,9 @@
           {#if qrCodes && qrCodes[row * cardsX + col]}
             <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 5})`}>
               {@html qrCodes[row * cardsX + col].svg}
+            </g>
+            <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>
+              {@html qrCodes[row * cardsX + col].textPath}
             </g>
           {/if}
 
