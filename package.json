@@ -37,6 +37,7 @@
   },
   "type": "module",
   "dependencies": {
+    "@directus/sdk": "^18.0.0",
     "@fontsource/bitter": "^5.1.0",
     "@fontsource/poppins": "^5.1.0",
     "bits-ui": "^0.21.10",
