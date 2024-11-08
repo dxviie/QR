@@ -32,11 +32,18 @@
   let cardsY = 0;
   let logoWidth = 0;
   let logoHeight = 0;
+  const subTextHeight = 5;
+  const subTextSpacing = 3;
   let logoOffsetTop = 0;
+  let subTextOffsetTop = 0;
 
   let prevQrCount = 0;
   let qrCount = 0;
   let qrCodes: { svg: string, code: string, textPath: string }[] = [];
+
+  let codeSVG;
+  let artSVG;
+  let ideasSVG;
 
   $: dimensions = orientation === 'portrait'
     ? {width: A3_HEIGHT, height: A3_WIDTH}
@@ -60,7 +67,8 @@
       startY = (dimensions.height - (cardSizeY * cardsY)) / 2;
       logoWidth = cardSizeX - 10;
       logoHeight = (LOGO_HEIGHT / LOGO_WIDTH) * logoWidth;
-      logoOffsetTop = cardSizeY - 5 - logoHeight;
+      subTextOffsetTop = cardSizeY - 5 - subTextHeight;
+      logoOffsetTop = subTextOffsetTop - subTextSpacing - logoHeight;
       qrCount = cardsX * cardsY;
       console.debug('startX', startX, 'startY', startY, 'logoWidth', logoWidth, 'logoHeight', logoHeight, 'logoOffsetTop', logoOffsetTop, 'qrCount', qrCount)
     }
@@ -72,6 +80,9 @@
         try {
           if (!glyphMap) {
             glyphMap = parseGlyphs(EMSReadability);
+            codeSVG = textToPath("code.", 0, 0, glyphMap);
+            artSVG = textToPath("art.", 0, 0, glyphMap);
+            ideasSVG = textToPath("ideas.", 0, 0, glyphMap);
           }
           qrCodes = await generateBusinessCards(qrCount);
           prevQrCount = qrCount;
@@ -291,6 +302,27 @@
               <g transform="translate({startX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})"
                  stroke-width="20">
                 {@html flattenSVGToPaths(HatchedLogo)}
+              </g>
+            {/if}
+          {/each}
+        {/each}
+      </g>
+
+      <g id="subtext">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            {#if qrCodes && qrCodes[row * cardsX + col]}
+              <g transform="translate({startX + (col * cardSizeX) + 10.5}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
+                 stroke-width="20">
+                {@html codeSVG}
+              </g>
+              <g transform="translate({startX + (col * cardSizeX) + 23.25}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
+                 stroke-width="20">
+                {@html artSVG}
+              </g>
+              <g transform="translate({startX + (col * cardSizeX) + 31.75}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
+                 stroke-width="20">
+                {@html ideasSVG}
               </g>
             {/if}
           {/each}
