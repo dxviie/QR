@@ -41,9 +41,9 @@
   let qrCount = 0;
   let qrCodes: { svg: string, code: string, textPath: string }[] = [];
 
-  let codeSVG;
-  let artSVG;
-  let ideasSVG;
+  let codeSVG = '';
+  let artSVG = '';
+  let ideasSVG = '';
 
   $: dimensions = orientation === 'portrait'
     ? {width: A3_HEIGHT, height: A3_WIDTH}
@@ -205,121 +205,6 @@
     URL.revokeObjectURL(url);
   }
 
-  function downloadSVGAsPNG(svgElement: SVGElement | null, filename = 'image.png'): Promise<void> {
-    if (!svgElement) {
-      console.error('SVG not found');
-      return;
-    }
-    return new Promise((resolve, reject) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-
-      // Get SVG dimensions and viewBox
-      let width, height;
-      if (svgElement.viewBox.baseVal) {
-        width = svgElement.viewBox.baseVal.width;
-        height = svgElement.viewBox.baseVal.height;
-      } else {
-        width = svgElement.width.baseVal.value;
-        height = svgElement.height.baseVal.value;
-      }
-
-      // Set a high fixed width and scale height proportionally
-      const targetWidth = 1280; // You can adjust this value
-      const scale = targetWidth / width;
-      canvas.width = targetWidth;
-      canvas.height = height * scale;
-
-      const svgString = new XMLSerializer().serializeToString(svgElement);
-      const svgBlob = new Blob([
-        `<?xml version="1.0" encoding="UTF-8" standalone="no"?>`,
-        svgString
-      ], {type: 'image/svg+xml;charset=utf-8'});
-      const url = URL.createObjectURL(svgBlob);
-
-      const img = new Image();
-      img.onload = async () => {
-        try {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-          ctx.scale(scale, scale);
-          ctx.drawImage(img, 0, 0, width, height);
-          URL.revokeObjectURL(url);
-
-          // Download the file
-          const link = document.createElement('a');
-          link.download = filename;
-          link.href = canvas.toDataURL('image/png', 1.0);
-          link.click();
-
-          // Get the blob for upload-image
-          const blob = await new Promise<Blob>(resolve => {
-            canvas.toBlob(resolve, 'image/png', 1.0);
-          });
-
-          // Upload to Directus
-          // const formData = new FormData();
-          // formData.append('title', 'Generated Image');
-          // formData.append('filename_download', filename);
-          // formData.append('type', 'image/png');
-          // formData.append('storage', 'local');
-          // formData.append('file', blob, filename);
-          //
-          // const response = await fetch('/api/directus', {
-          //   method: 'POST',
-          //   body: formData
-          // });
-          //
-          // const result = await response.json();
-          //
-          // if (result.success) {
-          //   console.log('File uploaded, ID:', result.fileId);
-          // } else {
-          //   throw new Error(result.error);
-          // }
-
-
-          // Convert blob to base64
-          const base64 = await new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result);
-            reader.readAsDataURL(blob);
-          });
-
-          console.log('llllllllllllllllll', base64);
-          // Upload to server
-          const response = await fetch('/api/upload-image', {
-            method: 'POST',
-            body: JSON.stringify({
-              title: 'Generated Image',
-              filename_download: filename,
-              type: 'image/png',
-              storage: 'local',
-              // folder: 'b25d736c-bda4-4e98-a7a1-d29277906b1d',
-              file: base64,
-              width: canvas.width,
-              height: canvas.height
-            })
-          });
-
-          const result = await response.json();
-
-          if (result.success) {
-            console.log('File uploaded, ID:', result.fileId);
-          } else {
-            throw new Error(result.error);
-          }
-
-          resolve();
-        } catch (error) {
-          reject(error);
-        }
-      };
-
-      img.onerror = reject;
-      img.src = url;
-    });
-  }
-
 </script>
 
 <div class="layout-container">
@@ -349,13 +234,13 @@
       <g id="cutting-lines">
         <!-- Drawing cutting marks      -->
         <!--   Horizontal Top   -->
-        <path d={`M ${startX - 10},${startY + offsetY} L ${startX - 5},${startY + offsetY}`} stroke="black" fill="none"/>
-        <path d={`M ${startX + (cardSizeX * cardsX) + 5},${startY + offsetY} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY}`}
+        <path d={`M ${startX - 10},${startY + offsetY} L ${startX + 3},${startY + offsetY}`} stroke="black" fill="none"/>
+        <path d={`M ${startX + (cardSizeX * cardsX) - 3},${startY + offsetY} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY}`}
               stroke="black" fill="none"/>
         <!--   Horizontal Bottom   -->
-        <path d={`M ${startX - 10},${startY + offsetY + (cardSizeY * cardsY)} L ${startX - 5},${startY + offsetY + (cardSizeY * cardsY)}`}
+        <path d={`M ${startX - 10},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + 3},${startY + offsetY + (cardSizeY * cardsY)}`}
               stroke="black" fill="none"/>
-        <path d={`M ${startX + (cardSizeX * cardsX) + 5},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY + (cardSizeY * cardsY)}`}
+        <path d={`M ${startX + (cardSizeX * cardsX) - 3},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY + (cardSizeY * cardsY)}`}
               stroke="black" fill="none"/>
         <!--   Vertical Left   -->
         <path d={`M ${startX},${startY + offsetY - 10} L ${startX},${startY + offsetY - 5}`} stroke="black" fill="none"/>
@@ -448,7 +333,6 @@
   {/if}
 
   <Button on:click={downloadSVG}>Create Pages & Download Plottable SVG</Button>
-  <Button on:click={() => downloadSVGAsPNG(document.querySelector('.layout-svg'), 'business-cards.png')}>Download as PNG</Button>
 </div>
 
 <style>
