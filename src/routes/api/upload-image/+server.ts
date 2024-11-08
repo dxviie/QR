@@ -39,8 +39,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			formData.append('file_1_type', rb.type);
 			formData.append('file_1_width', rb.width);
 			formData.append('file_1_height', rb.height);
-			formData.append('file_1_filename_download', rb.filename_download);
-			formData.append('file', file, 'hello.png');
+			formData.append('file', file, rb.filename_download);
 
 			console.debug('Uploading file:', payload);
 
