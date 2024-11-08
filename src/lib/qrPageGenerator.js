@@ -7,10 +7,9 @@ export async function generateQrPages(qrData, svg) {
 
 	for (const item of qrData) {
 		try {
-			console.log('item--', item.code);
+			console.debug('Generating QR page for:', item.code);
 			// Upload Image
-			const fileId = await uploadImageForSVG(item.svg, item.code + '.png');
-			console.info('11111111111111--- ', fileId);
+			const fileId = await uploadImageForSVG(svg, item.code + '.png');
 
 			// Create QR Page
 			const pageResponse = await fetch('/api/create-page', {
@@ -64,7 +63,7 @@ async function uploadImageForSVG(svgElement, filename) {
 		}
 
 		// Set a high fixed width and scale height proportionally
-		const targetWidth = 1280; // You can adjust this value
+		const targetWidth = 1280;
 		const scale = targetWidth / width;
 		canvas.width = targetWidth;
 		canvas.height = height * scale;
@@ -79,18 +78,16 @@ async function uploadImageForSVG(svgElement, filename) {
 		const img = new Image();
 		img.onload = async () => {
 			try {
+				console.debug('IMG ONLOAD!');
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.scale(scale, scale);
 				ctx.drawImage(img, 0, 0, width, height);
 				URL.revokeObjectURL(url);
 
 				// Get the blob for upload-image
-				const blob =
-					(await new Promise()) <
-					Blob >
-					((resolve) => {
-						canvas.toBlob(resolve, 'image/png', 1.0);
-					});
+				const blob = await new Promise((resolve) => {
+					canvas.toBlob((b) => resolve(b), 'image/png', 1.0);
+				});
 
 				// Convert blob to base64
 				const base64 = await new Promise((resolve) => {
@@ -102,17 +99,20 @@ async function uploadImageForSVG(svgElement, filename) {
 				// Upload to server
 				const response = await fetch('/api/upload-image', {
 					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json'
+					},
 					body: JSON.stringify({
 						title: 'Generated Image',
 						filename_download: filename,
 						type: 'image/png',
 						storage: 'local',
-						// folder: 'b25d736c-bda4-4e98-a7a1-d29277906b1d',
 						file: base64,
 						width: canvas.width,
 						height: canvas.height
 					})
 				});
+
 				const result = await response.json();
 				if (!result.success) {
 					throw new Error(result.error);
