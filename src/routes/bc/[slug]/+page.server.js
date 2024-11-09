@@ -5,12 +5,6 @@ import { DIRECTUS_URL, DIRECTUS_LOGIN, DIRECTUS_PASS } from '$env/static/private
 
 const directus = createDirectus(DIRECTUS_URL).with(authentication('json')).with(rest());
 
-function extractUUID(markdownImage) {
-	const regex = /!\[.*?\]\((.*?)\)/;
-	const match = markdownImage.match(regex);
-	return match ? match[1] : null;
-}
-
 /** @type {import('./$types').PageServerLoad} */
 export async function entries() {
 	const result = await directus.login(DIRECTUS_LOGIN, DIRECTUS_PASS);
@@ -53,14 +47,13 @@ export async function load({ params }) {
 			throw error(404, 'Not found');
 		}
 		const { title, image, message } = result[0];
-		const outline = extractUUID(message);
 
 		return {
 			slug,
 			title: title,
 			content: message,
 			blankOutImage: image,
-			outlineImage: outline
+			outlineImage: message
 		};
 	} catch (e) {
 		throw error(404, 'Not found');
