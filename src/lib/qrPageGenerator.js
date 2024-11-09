@@ -1,15 +1,57 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
+
+const GROUPS_TO_REMOVE = ['cutting-lines', 'qr-codes', 'qr-text', 'logos', 'subtext'];
+
 export async function generateQrPages(qrData, svg) {
 	console.debug('Generating QR pages', 'data:', qrData, 'svg:', svg);
 
 	const results = [];
-
 	for (const item of qrData) {
 		try {
-			console.debug('Generating QR page for:', item.code);
+			console.debug('Creating blank-out image for', item.code);
+			const blankOutCopy = svg.cloneNode(true);
+			blankOutCopy.querySelectorAll('g').forEach((g) => {
+				const id = g.getAttribute('id');
+				if (id && GROUPS_TO_REMOVE.some((pattern) => id.includes(pattern))) {
+					g.remove();
+				}
+			});
+			blankOutCopy.querySelectorAll('rect').forEach((rect) => {
+				const id = rect.getAttribute('id');
+				if (id && id !== `card-${item.code}`) {
+					rect.remove();
+				} else {
+					rect.setAttribute('fill', '#FFFFFFFF');
+				}
+			});
 			// Upload Image
-			const fileId = await uploadImageForSVG(svg, item.code + '.png');
+			const fileId = await uploadImageForSVG(blankOutCopy, item.code + '-blank.png');
+			console.debug('Uploaded blank-out image', fileId);
+
+			// Create Outline Image
+			console.debug('Creating outline image for', item.code);
+			let outlineCopy = svg.cloneNode(true);
+			outlineCopy.querySelectorAll('g').forEach((g) => {
+				const id = g.getAttribute('id');
+				if (id && GROUPS_TO_REMOVE.some((pattern) => id.includes(pattern))) {
+					g.remove();
+				}
+			});
+			outlineCopy.querySelectorAll('rect').forEach((rect) => {
+				const id = rect.getAttribute('id');
+				if (id && id !== `card-${item.code}`) {
+					rect.remove();
+				} else {
+					rect.setAttribute('fill', 'none');
+					rect.setAttribute('stroke', '#FFFFFF');
+					rect.setAttribute('stroke-width', '3');
+				}
+			});
+			const outlineFileId = await uploadImageForSVG(outlineCopy, item.code + '-outline.png');
+			console.debug('Uploaded outline image', outlineFileId);
+			// Generate some markdown to show the outline image
+			const markdown = `![Outline](${outlineFileId})`;
 
 			// Create QR Page
 			const pageResponse = await fetch('/api/create-page', {
@@ -19,12 +61,13 @@ export async function generateQrPages(qrData, svg) {
 					data: {
 						title: `QR Code - ${item.code}`,
 						image: fileId,
-						message: `Scan this QR code to access: ${item.textPath}`,
+						message: markdown,
 						slug: `qr-${item.code.toLowerCase()}`
 					}
 				})
 			});
 			const { page } = await pageResponse.json();
+			console.debug('Created page', page.id, 'for', item.code);
 
 			results.push({
 				success: true,
@@ -78,7 +121,6 @@ async function uploadImageForSVG(svgElement, filename) {
 		const img = new Image();
 		img.onload = async () => {
 			try {
-				console.debug('IMG ONLOAD!');
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.scale(scale, scale);
 				ctx.drawImage(img, 0, 0, width, height);

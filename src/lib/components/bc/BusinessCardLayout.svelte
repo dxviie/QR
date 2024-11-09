@@ -191,11 +191,12 @@
     console.log("==============SVG=====================", svg);
     await generateQrPages(qrCodes, svg);
     // remove all rects from SVG
-    svg.querySelectorAll('rect').forEach(rect => rect.remove());
+    const svgCopy = svg.cloneNode(true) as SVGElement;
+    svgCopy.querySelectorAll('rect').forEach(rect => rect.remove());
     // remove all the defs and images from SVG
-    svg.querySelectorAll('defs').forEach(defs => defs.remove());
+    svgCopy.querySelectorAll('defs').forEach(defs => defs.remove());
 
-    const svgData = new XMLSerializer().serializeToString(svg);
+    const svgData = new XMLSerializer().serializeToString(svgCopy);
     const blob = new Blob([svgData], {type: 'image/svg+xml'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
