@@ -1,8 +1,21 @@
 <script lang="ts">
-  import type {PageData} from './$types';
+  import {marked} from "marked";
 
-  let {data}: { data: PageData } = $props();
+  export let data;
+
+  $: post = data;
+
+  $: htmlContent = marked(data.content);
+
+  $: {
+    if (post) {
+      console.debug(post)
+    }
+
+  }
 </script>
 
-<h1>{data.title}</h1>
-<div>{@html data.content}</div>
+<h1>{post.title}</h1>
+
+<img src={`https://directus.d17e.dev/assets/${post.blankOutImage}`}>
+<img src={`https://directus.d17e.dev/assets/${post.outlineImage}`}>
