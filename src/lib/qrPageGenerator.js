@@ -50,8 +50,6 @@ export async function generateQrPages(qrData, svg) {
 			});
 			const outlineFileId = await uploadImageForSVG(outlineCopy, item.code + '-outline.png');
 			console.debug('Uploaded outline image', outlineFileId);
-			// Generate some markdown to show the outline image
-			const markdown = `![Outline](${outlineFileId})`;
 
 			// Create QR Page
 			const pageResponse = await fetch('/api/create-page', {
@@ -59,10 +57,10 @@ export async function generateQrPages(qrData, svg) {
 				body: JSON.stringify({
 					action: 'createQRPage',
 					data: {
-						title: `QR Code - ${item.code}`,
+						title: `${item.code.toUpperCase()}`,
 						image: fileId,
-						message: markdown,
-						slug: `qr-${item.code.toLowerCase()}`
+						message: outlineFileId,
+						slug: `${item.code.toLowerCase()}`
 					}
 				})
 			});
