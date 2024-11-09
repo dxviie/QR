@@ -25,7 +25,9 @@ export async function entries() {
 		if (result.length === 0) {
 			throw error(404, 'Not found');
 		}
-		return result.map((p) => p.slug);
+		return result.map((p) => ({
+			slug: p.slug
+		}));
 	} catch (e) {
 		throw error(404, 'Not found');
 	}
