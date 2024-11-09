@@ -2,11 +2,25 @@
 // @ts-nocheck
 
 const GROUPS_TO_REMOVE = ['cutting-lines', 'qr-codes', 'qr-text', 'logos', 'subtext'];
+const ALL_GROUPS = ['cutting-lines', 'qr-codes', 'qr-text', 'logos', 'subtext', 'card-rects'];
 
-export async function generateQrPages(qrData, svg) {
+export async function generateQrPages(qrData, svg, artworkTitle) {
 	console.debug('Generating QR pages', 'data:', qrData, 'svg:', svg);
 
+	const fullCopy = svg.cloneNode(true);
+	const artworkCopy = svg.cloneNode(true);
+	artworkCopy.querySelectorAll('g').forEach((g) => {
+		const id = g.getAttribute('id');
+		if (id && ALL_GROUPS.some((pattern) => id.includes(pattern))) {
+			g.remove();
+		}
+	});
+	await uploadImageForSVG(fullCopy, artworkTitle + '-business-card-layout.png');
+	await uploadImageForSVG(artworkCopy, artworkTitle + '-artwork.png');
+
 	const results = [];
+	const cards = qrData.length;
+	let cardCount = 1;
 	for (const item of qrData) {
 		try {
 			console.debug('Creating blank-out image for', item.code);
@@ -57,7 +71,7 @@ export async function generateQrPages(qrData, svg) {
 				body: JSON.stringify({
 					action: 'createQRPage',
 					data: {
-						title: `${item.code.toUpperCase()}`,
+						title: `${artworkTitle} ${cardCount}/${cards}`,
 						image: fileId,
 						message: outlineFileId,
 						slug: `${item.code.toLowerCase()}`
@@ -72,6 +86,7 @@ export async function generateQrPages(qrData, svg) {
 				code: item.code,
 				pageId: page.id
 			});
+			cardCount++;
 		} catch (error) {
 			results.push({
 				success: false,

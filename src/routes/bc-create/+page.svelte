@@ -7,6 +7,7 @@
   let imageUrl: string | null = null;
   let orientation: 'portrait' | 'landscape' = 'portrait';
   let offsetY = 0;
+  let artworkTitle = '';
 
   function handleImageSelected(event: CustomEvent) {
     imageUrl = event.detail.dataUrl;
@@ -22,19 +23,30 @@
   function handleOffsetYChange(event: Event) {
     offsetY = Number((event.target as HTMLInputElement).value);
   }
+
+  function handleArtworkTitleChange(event: Event) {
+    artworkTitle = (event.target as HTMLInputElement).value;
+  }
 </script>
 
 <main>
-  <h1>Business Card Layout Generator</h1>
+  <header>
+    <h1>Business Card Layout Generator</h1>
 
-  <ImageUploader on:imageSelected={handleImageSelected}/>
-  <div>
-    <Label for="offsetY">Y-Axis Offset (px)</Label>
-    <Input type="number" id="offsetY" min="0" step=".1" value={offsetY} on:change={handleOffsetYChange}/>
-  </div>
+    <ImageUploader on:imageSelected={handleImageSelected}/>
+    <div>
+      <Label for="offsetY">Y-Axis Offset (px)</Label>
+      <Input type="number" id="offsetY" min="0" step=".1" value={offsetY} on:change={handleOffsetYChange}/>
+    </div>
+
+    <div>
+      <Label for="artworkTitle">Artwork Title</Label>
+      <Input type="text" id="artworkTitle" value={artworkTitle} on:change={handleArtworkTitleChange}/>
+    </div>
+  </header>
 
   <div class="layout-wrapper">
-    <BusinessCardLayout {imageUrl} {orientation} {offsetY}/>
+    <BusinessCardLayout {imageUrl} {orientation} {offsetY} {artworkTitle}/>
   </div>
 </main>
 

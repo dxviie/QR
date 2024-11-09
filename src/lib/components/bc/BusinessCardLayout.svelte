@@ -4,6 +4,7 @@
   export let imageUrl: string | null = null;
   export let orientation: 'portrait' | 'landscape' = 'portrait';
   export let offsetY = 0;
+  export let artworkTitle = '';
 
   import HatchedLogo from '$lib/components/bc/logo-d17e-hatched-optimized.svg?raw';
   import EMSReadability from '$lib/components/bc/EMSReadability.svg?raw';
@@ -189,7 +190,7 @@
       return;
     }
     console.log("==============SVG=====================", svg);
-    await generateQrPages(qrCodes, svg);
+    await generateQrPages(qrCodes, svg, artworkTitle);
     // remove all rects from SVG
     const svgCopy = svg.cloneNode(true) as SVGElement;
     svgCopy.querySelectorAll('rect').forEach(rect => rect.remove());
