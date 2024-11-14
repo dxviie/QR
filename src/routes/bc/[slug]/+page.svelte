@@ -19,3 +19,9 @@
 
 <img src={`https://directus.d17e.dev/assets/${post.blankOutImage}`}>
 <img src={`https://directus.d17e.dev/assets/${post.outlineImage}`}>
+
+<style>
+    img {
+        transform: scaleX(-1);
+    }
+</style>
