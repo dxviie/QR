@@ -3,6 +3,7 @@
 
   export let imageUrl: string | null = null;
   export let orientation: 'portrait' | 'landscape' = 'portrait';
+  export let offsetX = 0;
   export let offsetY = 0;
   export let artworkTitle = '';
 
@@ -10,6 +11,25 @@
   import EMSReadability from '$lib/components/bc/EMSReadability.svg?raw';
   import {flattenSVGToPaths} from "$lib/svgFlattener";
   import {generateQrPages} from "$lib/qrPageGenerator";
+
+  const RANDOM_STRINGS = ["y02f04",
+    "kjmd8c",
+    "k9emhq",
+    "tqryhh",
+    "7ymd8f",
+    "e5mh3p",
+    "ux8ay0",
+    "it04sq",
+    "aimqgu",
+    "81x6m6",
+    "4w746c",
+    "jnmfz6",
+    "2gg5wf",
+    "f6gpuo",
+    "j1g96j",
+    "sc2qs0",
+    "jk2h4h",
+    "tissta"];
 
   let glyphMap: Map<string, { pathData: string, width: number }> | null = null;
 
@@ -124,9 +144,9 @@
     }
 
     // Generate array of promises
-    const promises = Array.from({length: count}, async () => {
+    const promises = Array.from({length: count}, async (item, index) => {
       if (!glyphMap) throw new Error('glyphMap not initialized');
-      const randomString = generateRandomString();
+      const randomString = RANDOM_STRINGS[index];//generateRandomString();
       const textPath = textToPath(`qr.d17e.dev/bc/${randomString}`, 0, 0, glyphMap);
       const svg = await createQrObjectForString(randomString);
       const svgPaths = flattenSVGToPaths(svg);
@@ -236,22 +256,24 @@
       <g id="cutting-lines">
         <!-- Drawing cutting marks      -->
         <!--   Horizontal Top   -->
-        <path d={`M ${startX - 10},${startY + offsetY} L ${startX + 3},${startY + offsetY}`} stroke="black" fill="none"/>
-        <path d={`M ${startX + (cardSizeX * cardsX) - 3},${startY + offsetY} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY}`}
+        <path d={`M ${startX + offsetX - 10},${startY + offsetY} L ${startX + offsetX + 3},${startY + offsetY}`} stroke="black"
+              fill="none"/>
+        <path d={`M ${startX + offsetX + (cardSizeX * cardsX) - 3},${startY + offsetY} L ${startX + offsetX + (cardSizeX * cardsX) + 10},${startY + offsetY}`}
               stroke="black" fill="none"/>
         <!--   Horizontal Bottom   -->
-        <path d={`M ${startX - 10},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + 3},${startY + offsetY + (cardSizeY * cardsY)}`}
+        <path d={`M ${startX + offsetX - 10},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + offsetX + 3},${startY + offsetY + (cardSizeY * cardsY)}`}
               stroke="black" fill="none"/>
-        <path d={`M ${startX + (cardSizeX * cardsX) - 3},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + (cardSizeX * cardsX) + 10},${startY + offsetY + (cardSizeY * cardsY)}`}
+        <path d={`M ${startX + offsetX + (cardSizeX * cardsX) - 3},${startY + offsetY + (cardSizeY * cardsY)} L ${startX + offsetX + (cardSizeX * cardsX) + 10},${startY + offsetY + (cardSizeY * cardsY)}`}
               stroke="black" fill="none"/>
         <!--   Vertical Left   -->
-        <path d={`M ${startX},${startY + offsetY - 10} L ${startX},${startY + offsetY - 5}`} stroke="black" fill="none"/>
-        <path d={`M ${startX},${startY + offsetY + (cardSizeY * cardsY) + 5} L ${startX},${startY + offsetY + (cardSizeY * cardsY) + 10}`}
+        <path d={`M ${startX + offsetX},${startY + offsetY - 10} L ${startX + offsetX},${startY + offsetY - 5}`} stroke="black"
+              fill="none"/>
+        <path d={`M ${startX + offsetX},${startY + offsetY + (cardSizeY * cardsY) + 5} L ${startX + offsetX},${startY + offsetY + (cardSizeY * cardsY) + 10}`}
               stroke="black" fill="none"/>
         <!--   Vertical Right   -->
-        <path d={`M ${startX + (cardSizeX * cardsX)},${startY + offsetY - 10} L ${startX + (cardSizeX * cardsX)},${startY + offsetY - 5}`}
+        <path d={`M ${startX + offsetX + (cardSizeX * cardsX)},${startY + offsetY - 10} L ${startX + offsetX + (cardSizeX * cardsX)},${startY + offsetY - 5}`}
               stroke="black" fill="none"/>
-        <path d={`M ${startX + (cardSizeX * cardsX)},${startY + offsetY + (cardSizeY * cardsY) + 5} L ${startX + (cardSizeX * cardsX)},${startY + offsetY + (cardSizeY * cardsY) + 10}`}
+        <path d={`M ${startX + offsetX + (cardSizeX * cardsX)},${startY + offsetY + (cardSizeY * cardsY) + 5} L ${startX + offsetX + (cardSizeX * cardsX)},${startY + offsetY + (cardSizeY * cardsY) + 10}`}
               stroke="black" fill="none"/>
       </g>
 
@@ -261,7 +283,7 @@
             {#if qrCodes && qrCodes[row * cardsX + col]}
               <rect
                       id={`card-${qrCodes[row * cardsX + col].code}`}
-                      x={startX + (col * cardSizeX)}
+                      x={startX + offsetX + (col * cardSizeX)}
                       y={startY + offsetY + (row * cardSizeY)}
                       width={cardSizeX}
                       height={cardSizeY}
@@ -274,56 +296,56 @@
         {/each}
       </g>
 
-      <g id="qr-codes">
-        {#each Array(cardsY) as _, row}
-          {#each Array(cardsX) as _, col}
-            {#if qrCodes && qrCodes[row * cardsX + col]}
-              <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 5})`}>
-                {@html qrCodes[row * cardsX + col].svg}
-              </g>
-            {/if}
-          {/each}
-        {/each}
-      </g>
+      <!--      <g id="qr-codes">-->
+      <!--        {#each Array(cardsY) as _, row}-->
+      <!--          {#each Array(cardsX) as _, col}-->
+      <!--            {#if qrCodes && qrCodes[row * cardsX + col]}-->
+      <!--              <g transform={`translate(${startX + offsetX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 5})`}>-->
+      <!--                {@html qrCodes[row * cardsX + col].svg}-->
+      <!--              </g>-->
+      <!--            {/if}-->
+      <!--          {/each}-->
+      <!--        {/each}-->
+      <!--      </g>-->
 
-      <g id="qr-text">
-        {#each Array(cardsY) as _, row}
-          {#each Array(cardsX) as _, col}
-            {#if qrCodes && qrCodes[row * cardsX + col]}
-              <g transform={`translate(${startX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>
-                {@html qrCodes[row * cardsX + col].textPath}
-              </g>
-            {/if}
-          {/each}
-        {/each}
-      </g>
+      <!--      <g id="qr-text">-->
+      <!--        {#each Array(cardsY) as _, row}-->
+      <!--          {#each Array(cardsX) as _, col}-->
+      <!--            {#if qrCodes && qrCodes[row * cardsX + col]}-->
+      <!--              <g transform={`translate(${startX + offsetX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>-->
+      <!--                {@html qrCodes[row * cardsX + col].textPath}-->
+      <!--              </g>-->
+      <!--            {/if}-->
+      <!--          {/each}-->
+      <!--        {/each}-->
+      <!--      </g>-->
 
-      <g id="logos">
-        {#each Array(cardsY) as _, row}
-          {#each Array(cardsX) as _, col}
-            {#if qrCodes && qrCodes[row * cardsX + col]}
-              <g transform="translate({startX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})"
-                 stroke-width="20">
-                {@html flattenSVGToPaths(HatchedLogo)}
-              </g>
-            {/if}
-          {/each}
-        {/each}
-      </g>
+      <!--      <g id="logos">-->
+      <!--        {#each Array(cardsY) as _, row}-->
+      <!--          {#each Array(cardsX) as _, col}-->
+      <!--            {#if qrCodes && qrCodes[row * cardsX + col]}-->
+      <!--              <g transform="translate({startX + offsetX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})"-->
+      <!--                 stroke-width="20">-->
+      <!--                {@html flattenSVGToPaths(HatchedLogo)}-->
+      <!--              </g>-->
+      <!--            {/if}-->
+      <!--          {/each}-->
+      <!--        {/each}-->
+      <!--      </g>-->
 
       <g id="subtext">
         {#each Array(cardsY) as _, row}
           {#each Array(cardsX) as _, col}
             {#if qrCodes && qrCodes[row * cardsX + col]}
-              <g transform="translate({startX + (col * cardSizeX) + 10.5}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
+              <g transform="translate({startX + offsetX + (col * cardSizeX) + 10.5}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
                  stroke-width="20">
                 {@html codeSVG}
               </g>
-              <g transform="translate({startX + (col * cardSizeX) + 23.25}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
+              <g transform="translate({startX + offsetX + (col * cardSizeX) + 23.25}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
                  stroke-width="20">
                 {@html artSVG}
               </g>
-              <g transform="translate({startX + (col * cardSizeX) + 31.75}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
+              <g transform="translate({startX + offsetX + (col * cardSizeX) + 31.75}, {offsetY + startY + subTextOffsetTop + subTextSpacing + (row * cardSizeY)}) scale(2)"
                  stroke-width="20">
                 {@html ideasSVG}
               </g>

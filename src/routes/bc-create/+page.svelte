@@ -7,6 +7,7 @@
   let imageUrl: string | null = null;
   let orientation: 'portrait' | 'landscape' = 'portrait';
   let offsetY = 0;
+  let offsetX = 0;
   let artworkTitle = '';
 
   function handleImageSelected(event: CustomEvent) {
@@ -24,6 +25,10 @@
     offsetY = Number((event.target as HTMLInputElement).value);
   }
 
+  function handleOffsetXChange(event: Event) {
+    offsetX = Number((event.target as HTMLInputElement).value);
+  }
+
   function handleArtworkTitleChange(event: Event) {
     artworkTitle = (event.target as HTMLInputElement).value;
   }
@@ -34,6 +39,10 @@
     <h1>Business Card Layout Generator</h1>
 
     <ImageUploader on:imageSelected={handleImageSelected}/>
+    <div>
+      <Label for="offsetX">X-Axis Offset (px)</Label>
+      <Input type="number" id="offsetX" min="0" step=".1" value={offsetX} on:change={handleOffsetXChange}/>
+    </div>
     <div>
       <Label for="offsetY">Y-Axis Offset (px)</Label>
       <Input type="number" id="offsetY" min="0" step=".1" value={offsetY} on:change={handleOffsetYChange}/>
@@ -46,7 +55,7 @@
   </header>
 
   <div class="layout-wrapper">
-    <BusinessCardLayout {imageUrl} {orientation} {offsetY} {artworkTitle}/>
+    <BusinessCardLayout {imageUrl} {orientation} {offsetX} {offsetY} {artworkTitle}/>
   </div>
 </main>
 
