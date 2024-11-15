@@ -1,5 +1,6 @@
 <script>
     import '../app.css';
+    import {page} from '$app/stores';
     import {Toaster} from "$lib/components/ui/sonner";
     import {ModeWatcher} from "mode-watcher";
     import {toggleMode, mode} from "mode-watcher";
@@ -11,30 +12,34 @@
 </script>
 
 <div class="app-container">
-  <header>
-    <div class="header-left">
-      <a href="/" target="_self" aria-label="link to home" class="header-link">
-        <div class="title"><p class="logo">qr.d17e.dev</p></div>
-        <div><p class="description">Plottable QR Code Generator</p></div>
-      </a>
-    </div>
-    <div class="header-right">
-      <Button on:click={toggleMode} variant="ghost" size="icon">
-        {#if $mode === 'dark'}
-          <Moon/>
-        {:else}
-          <Sun/>
-        {/if}
-        <span class="sr-only">Toggle theme</span>
-      </Button>
-      <a href="/about" target="_self" class="header-link">
-        <Button variant="ghost" size="icon">
-          <CircleHelp/>
-          <span class="sr-only">Go to about page</span>
+
+
+  {#if !$page.url.pathname.startsWith('/bc')}
+    <header>
+      <div class="header-left">
+        <a href="/" target="_self" aria-label="link to home" class="header-link">
+          <div class="title"><p class="logo">qr.d17e.dev</p></div>
+          <div><p class="description">Plottable QR Code Generator</p></div>
+        </a>
+      </div>
+      <div class="header-right">
+        <Button on:click={toggleMode} variant="ghost" size="icon">
+          {#if $mode === 'dark'}
+            <Moon/>
+          {:else}
+            <Sun/>
+          {/if}
+          <span class="sr-only">Toggle theme</span>
         </Button>
-      </a>
-    </div>
-  </header>
+        <a href="/about" target="_self" class="header-link">
+          <Button variant="ghost" size="icon">
+            <CircleHelp/>
+            <span class="sr-only">Go to about page</span>
+          </Button>
+        </a>
+      </div>
+    </header>
+  {/if}
   <main>
     <slot></slot>
   </main>
@@ -96,7 +101,6 @@
     main {
         min-height: calc(100vh - 5rem);
         max-width: 1200px;
-        padding-top: 6rem;
         display: flex;
         flex-direction: column;
         align-items: center;
