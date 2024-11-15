@@ -9,7 +9,7 @@
 
   $: {
     if (post) {
-      console.debug(post)
+      console.debug('bc slug page post:: ', post)
     }
 
   }
