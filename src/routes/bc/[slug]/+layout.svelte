@@ -15,7 +15,6 @@
     main {
         min-height: calc(100vh - 1rem);
         max-width: 1200px;
-        padding: 1rem;
         display: flex;
         flex-direction: column;
         align-items: center;
