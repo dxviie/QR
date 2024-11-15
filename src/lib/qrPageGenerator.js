@@ -20,6 +20,7 @@ export async function generateQrPages(qrData, svg, artworkTitle) {
 
 	const results = [];
 	const cards = qrData.length;
+	let cardCount = 1;
 	for (const item of qrData) {
 		try {
 			console.debug('Creating card cut-out image for', item.code);
@@ -91,6 +92,7 @@ export async function generateQrPages(qrData, svg, artworkTitle) {
 			});
 			const { page } = await pageResponse.json();
 			console.debug('Created page', page.id, 'for', item.code);
+			cardCount++;
 
 			results.push({
 				success: true,

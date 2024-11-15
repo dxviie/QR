@@ -12,25 +12,6 @@
   import {flattenSVGToPaths} from "$lib/svgFlattener";
   import {generateQrPages} from "$lib/qrPageGenerator";
 
-  const RANDOM_STRINGS = ["y02f04",
-    "kjmd8c",
-    "k9emhq",
-    "tqryhh",
-    "7ymd8f",
-    "e5mh3p",
-    "ux8ay0",
-    "it04sq",
-    "aimqgu",
-    "81x6m6",
-    "4w746c",
-    "jnmfz6",
-    "2gg5wf",
-    "f6gpuo",
-    "j1g96j",
-    "sc2qs0",
-    "jk2h4h",
-    "tissta"];
-
   let glyphMap: Map<string, { pathData: string, width: number }> | null = null;
 
   // A3 dimensions in millimeters
@@ -146,7 +127,7 @@
     // Generate array of promises
     const promises = Array.from({length: count}, async (item, index) => {
       if (!glyphMap) throw new Error('glyphMap not initialized');
-      const randomString = RANDOM_STRINGS[index];//generateRandomString();
+      const randomString = generateRandomString();
       const textPath = textToPath(`qr.d17e.dev/bc/${randomString}`, 0, 0, glyphMap);
       const svg = await createQrObjectForString(randomString);
       const svgPaths = flattenSVGToPaths(svg);
