@@ -47,15 +47,18 @@
         justify-content: center;
         align-items: center;
         height: 100%;
+        width: 100vw;
         gap: 1rem;
     }
 
     p {
+        width: 90vw;
         max-width: 40rem;
     }
 
     img {
         transform: scaleX(-1);
+        width: 90vw;
         max-width: 40rem;
         margin: 1rem 0;
     }
