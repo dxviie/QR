@@ -209,6 +209,10 @@
       console.error('SVG not found');
       return;
     }
+    if (!artworkTitle) {
+      console.error('Artwork title is required');
+      return;
+    }
     console.log("==============SVG=====================", svg);
     await generateQrPages(qrCodes, svg, artworkTitle);
     // remove all rects from SVG
@@ -243,8 +247,10 @@
         <g id="flipped-image">
           <image
                   href={imageUrl}
-                  width="100%"
-                  height="100%"
+                  width="420"
+                  height="297"
+                  x="0"
+                  y="0"
                   transform="scale(-1, 1) translate(-{dimensions.width}, 0)"
           />
         </g>
@@ -296,42 +302,42 @@
         {/each}
       </g>
 
-      <!--      <g id="qr-codes">-->
-      <!--        {#each Array(cardsY) as _, row}-->
-      <!--          {#each Array(cardsX) as _, col}-->
-      <!--            {#if qrCodes && qrCodes[row * cardsX + col]}-->
-      <!--              <g transform={`translate(${startX + offsetX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 5})`}>-->
-      <!--                {@html qrCodes[row * cardsX + col].svg}-->
-      <!--              </g>-->
-      <!--            {/if}-->
-      <!--          {/each}-->
-      <!--        {/each}-->
-      <!--      </g>-->
+      <g id="qr-codes">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            {#if qrCodes && qrCodes[row * cardsX + col]}
+              <g transform={`translate(${startX + offsetX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 5})`}>
+                {@html qrCodes[row * cardsX + col].svg}
+              </g>
+            {/if}
+          {/each}
+        {/each}
+      </g>
 
-      <!--      <g id="qr-text">-->
-      <!--        {#each Array(cardsY) as _, row}-->
-      <!--          {#each Array(cardsX) as _, col}-->
-      <!--            {#if qrCodes && qrCodes[row * cardsX + col]}-->
-      <!--              <g transform={`translate(${startX + offsetX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>-->
-      <!--                {@html qrCodes[row * cardsX + col].textPath}-->
-      <!--              </g>-->
-      <!--            {/if}-->
-      <!--          {/each}-->
-      <!--        {/each}-->
-      <!--      </g>-->
+      <g id="qr-text">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            {#if qrCodes && qrCodes[row * cardsX + col]}
+              <g transform={`translate(${startX + offsetX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>
+                {@html qrCodes[row * cardsX + col].textPath}
+              </g>
+            {/if}
+          {/each}
+        {/each}
+      </g>
 
-      <!--      <g id="logos">-->
-      <!--        {#each Array(cardsY) as _, row}-->
-      <!--          {#each Array(cardsX) as _, col}-->
-      <!--            {#if qrCodes && qrCodes[row * cardsX + col]}-->
-      <!--              <g transform="translate({startX + offsetX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})"-->
-      <!--                 stroke-width="20">-->
-      <!--                {@html flattenSVGToPaths(HatchedLogo)}-->
-      <!--              </g>-->
-      <!--            {/if}-->
-      <!--          {/each}-->
-      <!--        {/each}-->
-      <!--      </g>-->
+      <g id="logos">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            {#if qrCodes && qrCodes[row * cardsX + col]}
+              <g transform="translate({startX + offsetX + (col * cardSizeX) + 5}, {offsetY + startY + logoOffsetTop + (row * cardSizeY)})"
+                 stroke-width="20">
+                {@html flattenSVGToPaths(HatchedLogo)}
+              </g>
+            {/if}
+          {/each}
+        {/each}
+      </g>
 
       <g id="subtext">
         {#each Array(cardsY) as _, row}
