@@ -1,8 +1,16 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-const GROUPS_TO_REMOVE = ['cutting-lines', 'qr-codes', 'qr-text', 'logos', 'subtext'];
-const ALL_GROUPS = ['cutting-lines', 'qr-codes', 'qr-text', 'logos', 'subtext', 'card-rects'];
+const GROUPS_TO_REMOVE = ['cutting-lines', 'qr-codes', 'qr-text', 'extra-text', 'logos', 'subtext'];
+const ALL_GROUPS = [
+	'cutting-lines',
+	'qr-codes',
+	'qr-text',
+	'logos',
+	'extra-text',
+	'subtext',
+	'card-rects'
+];
 
 export async function generateQrPages(qrData, svg, artworkTitle) {
 	console.debug('Generating QR pages', 'data:', qrData, 'svg:', svg);

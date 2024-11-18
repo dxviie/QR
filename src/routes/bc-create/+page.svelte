@@ -9,6 +9,7 @@
   let offsetY = 0;
   let offsetX = 0;
   let artworkTitle = '';
+  let extraText = '';
 
   function handleImageSelected(event: CustomEvent) {
     imageUrl = event.detail.dataUrl;
@@ -32,30 +33,41 @@
   function handleArtworkTitleChange(event: Event) {
     artworkTitle = (event.target as HTMLInputElement).value;
   }
+
+  function handleExtraTextChange(event: Event) {
+    extraText = (event.target as HTMLInputElement).value;
+  }
 </script>
 
 <main>
   <header>
     <h1>Business Card Layout Generator</h1>
 
-    <ImageUploader on:imageSelected={handleImageSelected}/>
-    <div>
-      <Label for="offsetX">X-Axis Offset (px)</Label>
-      <Input type="number" id="offsetX" min="0" step=".1" value={offsetX} on:change={handleOffsetXChange}/>
-    </div>
-    <div>
-      <Label for="offsetY">Y-Axis Offset (px)</Label>
-      <Input type="number" id="offsetY" min="0" step=".1" value={offsetY} on:change={handleOffsetYChange}/>
+    <div class="controls">
+      <ImageUploader on:imageSelected={handleImageSelected}/>
+      <div>
+        <Label for="offsetX">X-Axis Offset (px)</Label>
+        <Input type="number" id="offsetX" min="0" step=".1" value={offsetX} on:change={handleOffsetXChange}/>
+      </div>
+      <div>
+        <Label for="offsetY">Y-Axis Offset (px)</Label>
+        <Input type="number" id="offsetY" min="0" step=".1" value={offsetY} on:change={handleOffsetYChange}/>
+      </div>
+      <div>
+        <Label for="artworkTitle">Artwork Title</Label>
+        <Input type="text" id="artworkTitle" value={artworkTitle} on:change={handleArtworkTitleChange}/>
+      </div>
+      <div>
+        <Label for="extraText">Extra Text</Label>
+        <Input type="text" id="extraText" value={extraText} on:change={handleExtraTextChange}/>
+      </div>
     </div>
 
-    <div>
-      <Label for="artworkTitle">Artwork Title</Label>
-      <Input type="text" id="artworkTitle" value={artworkTitle} on:change={handleArtworkTitleChange}/>
-    </div>
+
   </header>
 
   <div class="layout-wrapper">
-    <BusinessCardLayout {imageUrl} {orientation} {offsetX} {offsetY} {artworkTitle}/>
+    <BusinessCardLayout {imageUrl} {orientation} {offsetX} {offsetY} {artworkTitle} {extraText}/>
   </div>
 </main>
 
@@ -64,6 +76,14 @@
         padding: 1rem;
         max-width: 1200px;
         margin: 0 auto;
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        align-items: center;
+        width: 100%;
     }
 
     .layout-wrapper {

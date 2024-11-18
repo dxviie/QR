@@ -6,13 +6,12 @@
   export let offsetX = 0;
   export let offsetY = 0;
   export let artworkTitle = '';
+  export let extraText = '';
 
   import HatchedLogo from '$lib/components/bc/logo-d17e-hatched-optimized.svg?raw';
   import EMSReadability from '$lib/components/bc/EMSReadability.svg?raw';
   import {flattenSVGToPaths} from "$lib/svgFlattener";
   import {generateQrPages} from "$lib/qrPageGenerator";
-
-  let glyphMap: Map<string, { pathData: string, width: number }> | null = null;
 
   // A3 dimensions in millimeters
   const A3_WIDTH = 420;
@@ -38,6 +37,7 @@
   const subTextSpacing = 3;
   let logoOffsetTop = 0;
   let subTextOffsetTop = 0;
+  let extraTextPath = '';
 
   let prevQrCount = 0;
   let qrCount = 0;
@@ -51,6 +51,14 @@
     ? {width: A3_HEIGHT, height: A3_WIDTH}
     : {width: A3_WIDTH, height: A3_HEIGHT};
 
+  $ : {
+    if (extraText) {
+      const glyphMap = parseGlyphs(EMSReadability);
+      console.debug('extraText changed', extraText);
+      extraTextPath = textToPath(extraText, 0, 0, glyphMap);
+    }
+  }
+
   $: {
     if (typeof window !== 'undefined') {
       if (orientation === 'portrait') {
@@ -61,7 +69,7 @@
       } else {
         cardSizeX = CARD_HEIGHT;
         cardSizeY = CARD_WIDTH;
-        cardsX = 6;
+        cardsX = 7;
         cardsY = 3;
       }
       console.debug('orientation', orientation, 'dimensions', dimensions, 'cardSize', cardSizeX, cardSizeY, 'cards', cardsX, cardsY);
@@ -80,12 +88,10 @@
     if (qrCount !== prevQrCount) {
       (async () => {
         try {
-          if (!glyphMap) {
-            glyphMap = parseGlyphs(EMSReadability);
-            codeSVG = textToPath("code.", 0, 0, glyphMap);
-            artSVG = textToPath("art.", 0, 0, glyphMap);
-            ideasSVG = textToPath("ideas.", 0, 0, glyphMap);
-          }
+          const glyphMap = parseGlyphs(EMSReadability);
+          codeSVG = textToPath("code.", 0, 0, glyphMap);
+          artSVG = textToPath("art.", 0, 0, glyphMap);
+          ideasSVG = textToPath("ideas.", 0, 0, glyphMap);
           qrCodes = await generateBusinessCards(qrCount);
           prevQrCount = qrCount;
           console.debug('qrCodes', qrCodes);
@@ -126,7 +132,7 @@
 
     // Generate array of promises
     const promises = Array.from({length: count}, async (item, index) => {
-      if (!glyphMap) throw new Error('glyphMap not initialized');
+      const glyphMap = parseGlyphs(EMSReadability);
       const randomString = generateRandomString();
       const textPath = textToPath(`qr.d17e.dev/bc/${randomString}`, 0, 0, glyphMap);
       const svg = await createQrObjectForString(randomString);
@@ -301,6 +307,18 @@
             {#if qrCodes && qrCodes[row * cardsX + col]}
               <g transform={`translate(${startX + offsetX + (col * cardSizeX) + 5}, ${offsetY + startY + (row * cardSizeY) + 35})`}>
                 {@html qrCodes[row * cardsX + col].textPath}
+              </g>
+            {/if}
+          {/each}
+        {/each}
+      </g>
+
+      <g id="extra-text">
+        {#each Array(cardsY) as _, row}
+          {#each Array(cardsX) as _, col}
+            {#if qrCodes && qrCodes[row * cardsX + col] && extraText}
+              <g transform="translate({startX + offsetX + (col * cardSizeX) + 5}, {offsetY + startY + (row * cardSizeY) + 42}) scale(1.66)">
+                {@html extraTextPath}
               </g>
             {/if}
           {/each}
