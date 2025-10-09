@@ -234,8 +234,8 @@
         <g id="flipped-image">
           <image
                   href={imageUrl}
-                  width="420"
-                  height="297"
+                  width={dimensions.width}
+                  height={dimensions.height}
                   x="0"
                   y="0"
                   transform="scale(-1, 1) translate(-{dimensions.width}, 0)"
