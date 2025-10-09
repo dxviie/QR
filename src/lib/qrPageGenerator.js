@@ -20,7 +20,6 @@ export async function generateQrPages(qrData, svg, artworkTitle) {
 	artworkCopy.querySelectorAll('g').forEach((g) => {
 		const id = g.getAttribute('id');
 		if (id && ALL_GROUPS.some((pattern) => id.includes(pattern))) {
-			``
 			g.remove();
 		}
 	});
