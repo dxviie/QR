@@ -152,7 +152,7 @@
 				body: JSON.stringify({
 					value: `https://qr.d17e.dev/bc/${randomString}`,
 					ecl: 'H',
-					penMmSize: 0.4
+					penMmSize: 0.5
 				})
 			});
 
@@ -352,14 +352,14 @@
 				{/each}
 			</g>
 
-			<g id="qr-codes">
+			<g id="qr-codes" stroke="#000001">
 				{#each Array(cardsY) as _, row}
 					{#each Array(cardsX) as _, col}
 						{#if qrCodes && qrCodes[row * cardsX + col]}
 							<g
 								transform={orientation === 'landscape'
-									? `translate(${startX + offsetX + col * cardSizeX + 5}, ${offsetY + startY + row * cardSizeY + 5})`
-									: `translate(${startX + offsetX + col * cardSizeX + 67}, ${offsetY + startY + (row + 1) * cardSizeY - 17.5})`}
+									? `translate(${startX + offsetX + col * cardSizeX + 5}, ${offsetY + startY + row * cardSizeY})`
+									: `translate(${startX + offsetX + col * cardSizeX + 62}, ${offsetY + startY + (row + 1) * cardSizeY - 22.5})`}
 							>
 								{@html qrCodes[row * cardsX + col].svg}
 							</g>
@@ -384,7 +384,7 @@
 				{/each}
 			</g> -->
 
-			<!-- <g id="name">
+			<g id="name" stroke="#000002">
 				{#each Array(cardsY) as _, row}
 					{#each Array(cardsX) as _, col}
 						{#if qrCodes && qrCodes[row * cardsX + col]}
@@ -401,9 +401,9 @@
 						{/if}
 					{/each}
 				{/each}
-			</g> -->
+			</g>
 
-			<g id="extra-text">
+			<g id="extra-text" stroke="#000003">
 				{#each Array(cardsY) as _, row}
 					{#each Array(cardsX) as _, col}
 						{#if qrCodes && qrCodes[row * cardsX + col] && extraText}
@@ -421,7 +421,7 @@
 				{/each}
 			</g>
 
-			<g id="logos">
+			<g id="logos" stroke="#000004">
 				{#each Array(cardsY) as _, row}
 					{#each Array(cardsX) as _, col}
 						{#if qrCodes && qrCodes[row * cardsX + col]}
@@ -439,7 +439,7 @@
 				{/each}
 			</g>
 
-			<g id="subtext">
+			<g id="subtext" stroke="#000005">
 				{#each Array(cardsY) as _, row}
 					{#each Array(cardsX) as _, col}
 						{#if qrCodes && qrCodes[row * cardsX + col]}

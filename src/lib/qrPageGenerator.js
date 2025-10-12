@@ -1,7 +1,8 @@
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 
-const GROUPS_TO_REMOVE = ['cutting-lines', 'qr-codes', 'qr-text', 'extra-text', 'logos', 'subtext'];
+// const GROUPS_TO_REMOVE = ['cutting-lines', 'qr-codes', 'qr-text', 'extra-text', 'logos', 'subtext', 'name'];
+const GROUPS_TO_REMOVE = ['cutting-lines', 'qr-codes', 'qr-text', 'extra-text', 'logos', 'subtext', 'name'];
 const ALL_GROUPS = [
 	'cutting-lines',
 	'qr-codes',
