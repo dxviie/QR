@@ -3,6 +3,8 @@ import { createDirectus, rest, authentication, uploadFiles, readItems } from '@d
 import { error } from '@sveltejs/kit';
 import { DIRECTUS_URL, DIRECTUS_LOGIN, DIRECTUS_PASS } from '$env/static/private';
 
+export const prerender = true;
+
 const directus = createDirectus(DIRECTUS_URL).with(authentication('json')).with(rest());
 
 /** @type {import('./$types').PageServerLoad} */
