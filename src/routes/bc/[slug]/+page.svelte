@@ -119,8 +119,8 @@
         font-family: 'Nudica Mono', monospace;
         font-weight: bold;
         padding: 0.5rem 1rem;
-        background-color: hsl(var(--foreground));
-        color: hsl(var(--background));
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
         font-size: clamp(1.75rem, 4vw, 2.5rem);
         letter-spacing: -0.02em;
         margin: 0;
@@ -254,15 +254,15 @@
     }
 
     .cta-button.primary {
-        background-color: hsl(var(--foreground));
-        color: hsl(var(--background));
-        border-color: hsl(var(--foreground));
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
+        border-color: hsl(var(--primary));
     }
 
     .cta-button.primary:hover {
         background-color: darkorange;
         border-color: darkorange;
-        color: hsl(var(--background));
+        color: hsl(var(--primary-foreground));
         transform: translateY(-2px);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
@@ -274,8 +274,8 @@
     }
 
     .cta-button.secondary:hover {
-        background-color: hsl(var(--foreground));
-        color: hsl(var(--background));
+        background-color: hsl(var(--primary));
+        color: hsl(var(--primary-foreground));
         transform: translateY(-2px);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
     }
