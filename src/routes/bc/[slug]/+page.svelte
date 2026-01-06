@@ -38,7 +38,7 @@
   </section>
 
   <div class="image-container">
-    <img src={`https://directus.d17e.dev/assets/${post.outlineImage}`}
+    <img src={`https://directus.d17e.dev/assets/${post.outlineImage}?format=jpg&quality=70`}
          alt={`Image of the full artwork titled ${post.title} with an outline of where the card was cut out.`}>
   </div>
 
