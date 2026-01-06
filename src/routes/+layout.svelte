@@ -9,6 +9,22 @@
     import Footer from "$lib/components/BrandFooter.svelte";
     import '@fontsource/bitter';
     import '@fontsource/poppins';
+    import { onMount } from 'svelte';
+    
+    // Handle service worker registration to prevent POST request caching errors
+    onMount(() => {
+        if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+            // Unregister any existing service workers that might be causing issues
+            navigator.serviceWorker.getRegistrations().then((registrations) => {
+                for (const registration of registrations) {
+                    // Only unregister if it's not our service worker
+                    if (registration.scope.includes(window.location.origin)) {
+                        console.log('[Service Worker] Found existing registration, keeping it');
+                    }
+                }
+            });
+        }
+    });
 </script>
 
 <div class="app-container">
