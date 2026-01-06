@@ -35,6 +35,17 @@ export async function generateQrPages(qrData, svg, artworkTitle) {
 	const fullCopy = svg.cloneNode(true);
 	const artworkCopy = svg.cloneNode(true);
 	
+	// Remove logos from full copy - the hatched logo has extremely complex paths
+	// that break SVG-to-image conversion. Logos will still be in the downloadable SVG.
+	console.log('[generateQrPages] Removing logos from full copy for image generation...');
+	fullCopy.querySelectorAll('g').forEach((g) => {
+		const id = g.getAttribute('id');
+		if (id && id.includes('logos')) {
+			console.log('[generateQrPages] Removed logo group:', id);
+			g.remove();
+		}
+	});
+	
 	console.log('[generateQrPages] Removing groups from artwork copy...');
 	const removedGroups = [];
 	artworkCopy.querySelectorAll('g').forEach((g) => {
@@ -182,6 +193,64 @@ export async function generateQrPages(qrData, svg, artworkTitle) {
 	return results;
 }
 
+/**
+ * Prepares an SVG element for serialization by:
+ * 1. Adding proper namespace declarations (xmlns:xlink)
+ * 2. Converting href to xlink:href for better compatibility
+ * 3. Inlining <use> elements that reference internal content
+ */
+function prepareSvgForSerialization(svgElement) {
+	console.log('[prepareSvgForSerialization] Preparing SVG for serialization...');
+	
+	// Add xmlns:xlink namespace if not present
+	if (!svgElement.getAttribute('xmlns:xlink')) {
+		svgElement.setAttribute('xmlns:xlink', 'http://www.w3.org/1999/xlink');
+		console.log('[prepareSvgForSerialization] Added xmlns:xlink namespace');
+	}
+	
+	// Convert href to xlink:href for <image> elements
+	const images = svgElement.querySelectorAll('image');
+	console.log('[prepareSvgForSerialization] Processing images:', images.length);
+	for (const img of images) {
+		const href = img.getAttribute('href');
+		if (href && !img.getAttribute('xlink:href')) {
+			img.setAttributeNS('http://www.w3.org/1999/xlink', 'xlink:href', href);
+			img.removeAttribute('href');
+			console.log('[prepareSvgForSerialization] Converted image href to xlink:href');
+		}
+	}
+	
+	// Inline <use> elements by replacing them with the referenced content
+	// This is necessary because <use> references don't work reliably when SVG is loaded as blob
+	const useElements = Array.from(svgElement.querySelectorAll('use'));
+	console.log('[prepareSvgForSerialization] Processing use elements:', useElements.length);
+	for (const useEl of useElements) {
+		const href = useEl.getAttribute('href') || useEl.getAttribute('xlink:href');
+		if (href && href.startsWith('#')) {
+			const targetId = href.substring(1);
+			const target = svgElement.querySelector(`#${targetId}`);
+			if (target) {
+				// Clone the referenced element and replace the <use>
+				const clone = target.cloneNode(true);
+				clone.removeAttribute('id'); // Remove id to avoid duplicates
+				
+				// Apply any transform from the <use> element
+				const useTransform = useEl.getAttribute('transform');
+				if (useTransform) {
+					const existingTransform = clone.getAttribute('transform') || '';
+					clone.setAttribute('transform', `${useTransform} ${existingTransform}`.trim());
+				}
+				
+				// Replace <use> with the cloned content
+				useEl.parentNode.replaceChild(clone, useEl);
+				console.log('[prepareSvgForSerialization] Inlined use element referencing:', targetId);
+			}
+		}
+	}
+	
+	console.log('[prepareSvgForSerialization] SVG preparation complete');
+}
+
 async function uploadImageForSVG(svgElement, filename) {
 	console.log('[uploadImageForSVG] Starting upload process for filename:', filename);
 	
@@ -197,6 +266,11 @@ async function uploadImageForSVG(svgElement, filename) {
 		width: svgElement.width?.baseVal?.value,
 		height: svgElement.height?.baseVal?.value
 	});
+	
+	// Prepare SVG for serialization (fix namespaces, inline use elements)
+	console.log('[uploadImageForSVG] Preparing SVG for serialization...');
+	prepareSvgForSerialization(svgElement);
+	console.log('[uploadImageForSVG] SVG prepared for serialization');
 	
 	return new Promise((resolve, reject) => {
 		const canvas = document.createElement('canvas');
@@ -229,17 +303,15 @@ async function uploadImageForSVG(svgElement, filename) {
 		});
 
 		const svgString = new XMLSerializer().serializeToString(svgElement);
-		const svgBlob = new Blob(
-			[`<?xml version="1.0" encoding="UTF-8" standalone="no"?>`, svgString],
-			{ type: 'image/svg+xml;charset=utf-8' }
-		);
-		const url = URL.createObjectURL(svgBlob);
+		
+		// Use base64 encoding for the SVG - most reliable method for complex SVGs
+		const base64Svg = btoa(unescape(encodeURIComponent(svgString)));
+		const url = `data:image/svg+xml;base64,${base64Svg}`;
 		
 		console.log('[uploadImageForSVG] SVG serialized:', {
 			svgStringLength: svgString.length,
-			blobSize: svgBlob.size,
-			blobType: svgBlob.type,
-			objectURL: url.substring(0, 50) + '...'
+			base64Length: base64Svg.length,
+			dataUrlPrefix: url.substring(0, 80) + '...'
 		});
 
 		const img = new Image();
@@ -253,7 +325,7 @@ async function uploadImageForSVG(svgElement, filename) {
 				ctx.clearRect(0, 0, canvas.width, canvas.height);
 				ctx.scale(scale, scale);
 				ctx.drawImage(img, 0, 0, width, height);
-				URL.revokeObjectURL(url);
+				// No need to revoke data URLs
 				
 				console.log('[uploadImageForSVG] Image drawn to canvas');
 
@@ -349,9 +421,9 @@ async function uploadImageForSVG(svgElement, filename) {
 			console.error('[uploadImageForSVG] ERROR: Image load failed:', {
 				error: error,
 				filename: filename,
-				src: url.substring(0, 50) + '...'
+				srcLength: url.length
 			});
-			URL.revokeObjectURL(url);
+			// No need to revoke data URLs
 			reject(new Error('Failed to load image from SVG'));
 		};
 		
