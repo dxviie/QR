@@ -52,6 +52,7 @@
 <style>
 
     .generator-layout {
+        padding-top: 6rem;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
