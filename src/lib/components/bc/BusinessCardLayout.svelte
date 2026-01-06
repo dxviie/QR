@@ -8,7 +8,7 @@
 	export let artworkTitle = '';
 	export let extraText = '';
 
-	import HatchedLogo from '$lib/components/bc/logo-d17e-hatched-optimized.svg?raw';
+	import HatchedLogo from '$lib/components/bc/logo-with-hershey-letters-clean-is.svg?raw';
 	import EMSReadability from '$lib/components/bc/EMSReadability.svg?raw';
 	import { flattenSVGToPaths } from '$lib/svgFlattener';
 	import { generateQrPages } from '$lib/qrPageGenerator';
@@ -25,6 +25,8 @@
 	const LOGO_WIDTH = 45;
 	const LOGO_HEIGHT = 20;
 
+	const NAME_OFFSET = -2;
+	const EXTRA_TEXT_OFFSET = -1.5;
 	let startX = 0;
 	let startY = 0;
 	let cardSizeX = CARD_WIDTH;
@@ -393,7 +395,7 @@
 									? `translate(${startX + offsetX + col * cardSizeX + 10.5}, ${
 											offsetY + startY + subTextOffsetTop + subTextSpacing + row * cardSizeY
 										}) scale(2)`
-									: `translate(${startX + offsetX + col * cardSizeX + 5}, ${offsetY + startY + (row + 1) * cardSizeY - 10}) scale(2)`}
+									: `translate(${startX + offsetX + col * cardSizeX + 5}, ${NAME_OFFSET + offsetY + startY + (row + 1) * cardSizeY - 10}) scale(2)`}
 								stroke-width="20"
 							>
 								{@html davidSVG}
@@ -410,9 +412,9 @@
 							<g
 								transform={orientation === 'landscape'
 									? `translate(${startX + offsetX + col * cardSizeX + 5}, ${
-											offsetY + startY + row * cardSizeY + 42
+											offsetY + startY + row * cardSizeY + 42 
 										}) scale(1.66)`
-									: `translate(${startX + offsetX + col * cardSizeX + 5}, ${offsetY + startY + (row + 1) * cardSizeY - 5}) scale(1.66)`}
+									: `translate(${startX + offsetX + col * cardSizeX + 5}, ${EXTRA_TEXT_OFFSET + offsetY + startY + (row + 1) * cardSizeY - 5}) scale(1.66)`}
 							>
 								{@html extraTextPath}
 							</g>
@@ -429,55 +431,10 @@
 								transform="translate({startX + offsetX + col * cardSizeX + 5}, {offsetY +
 									startY +
 									logoOffsetTop +
-									row * cardSizeY})"
+									row * cardSizeY}) scale(.26)"
 								stroke-width="20"
 							>
 								{@html flattenSVGToPaths(HatchedLogo)}
-							</g>
-						{/if}
-					{/each}
-				{/each}
-			</g>
-
-			<g id="subtext" stroke="#000005">
-				{#each Array(cardsY) as _, row}
-					{#each Array(cardsX) as _, col}
-						{#if qrCodes && qrCodes[row * cardsX + col]}
-							<g
-								transform={orientation === 'landscape'
-									? `translate(${startX + offsetX + col * cardSizeX + 10.5}, ${
-											offsetY + startY + subTextOffsetTop + subTextSpacing + row * cardSizeY
-										}) scale(2)`
-									: `translate(${startX + offsetX + col * cardSizeX + 53}, ${
-											offsetY + startY + subTextOffsetTop + subTextSpacing + row * cardSizeY
-										}) scale(2)`}
-								stroke-width="20"
-							>
-								{@html codeSVG}
-							</g>
-							<g
-								transform={orientation === 'landscape'
-									? `translate(${startX + offsetX + col * cardSizeX + 23.5}, ${
-											offsetY + startY + subTextOffsetTop + subTextSpacing + row * cardSizeY
-										}) scale(2)`
-									: `translate(${startX + offsetX + col * cardSizeX + 53}, ${
-											offsetY + startY + 6 + subTextOffsetTop + subTextSpacing + row * cardSizeY
-										}) scale(2)`}
-								stroke-width="20"
-							>
-								{@html artSVG}
-							</g>
-							<g
-								transform={orientation === 'landscape'
-									? `translate(${startX + offsetX + col * cardSizeX + 31.75}, ${
-											offsetY + startY + subTextOffsetTop + subTextSpacing + row * cardSizeY
-										}) scale(2)`
-									: `translate(${startX + offsetX + col * cardSizeX + 53}, ${
-											offsetY + startY + subTextOffsetTop + 12 + subTextSpacing + row * cardSizeY
-										}) scale(2)`}
-								stroke-width="20"
-							>
-								{@html ideasSVG}
 							</g>
 						{/if}
 					{/each}
