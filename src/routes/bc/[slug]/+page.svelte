@@ -33,7 +33,7 @@
   <section class="content-section">
     <h2 class="subtitle">But wait, there's more!</h2>
     <p class="body-text">
-      This is what the full artwork looks like with an outline of where the card was cut out:
+      This is what the full artwork looks like with an outline of where your card was cut out:
     </p>
   </section>
 
@@ -46,15 +46,15 @@
     <h2 class="subtitle">Why did I make these?</h2>
     <p class="body-text">
       Well, this is the kind of stuff I 🧡 doing and I thought this is a great way of showcasing what I <em>can</em> do.
-      Which is, coming up with ideas and then making them happen. Start to finish.
+      Which is, coming up with an idea and then making them happen.
     </p>
     <p class="body-text highlight">
-      Turning <strong>ideas</strong> into <strong>art</strong> through <strong>code</strong>.<br/>
-      And then back again.
+      Turning <strong>ideas</strong> into reality.
+      <br/>
+      From design, over development, to delivery.
     </p>
     <p class="body-text">
       I hope you like it!
-    </p>
   </section>
 
   <section class="cta-section">
