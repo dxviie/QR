@@ -18,7 +18,7 @@
       <div class="header-left">
         <a href="/" target="_self" aria-label="link to home" class="header-link">
           <D17ELogo/>
-          <span class="wordmark">qr.d17e.dev</span>
+          <span class="wordmark">QR.d17e.dev</span>
         </a>
         <span class="tagline">Plottable QR Code Generator</span>
       </div>
@@ -89,7 +89,7 @@
     .header-link {
         border-bottom-width: 0;
         display: flex;
-        align-items: center;
+        align-items: baseline;
         gap: 0.6rem;
     }
 
