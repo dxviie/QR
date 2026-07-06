@@ -139,7 +139,7 @@
   </div>
 
   <div class="header mt-6 mb-6">
-    <p>This image to plottable SVG conversion is very bare-bones by design. It was really just made to turn pictures of QR codes into
+    <p class="explainer">This image to plottable SVG conversion is very bare-bones by design. It was really just made to turn pictures of QR codes into
       plottable QR codes. It just doesn't care much if you actually feed it a QR or not and <i>works</i> either way.<br/><br/>
       In case you're in the market for something more elaborate to turn images into plottable SVGs you can check my other little project <a
               href="https://rstr.d17e.dev">RSTR</a>.
@@ -151,9 +151,14 @@
 <style>
     svg {
         background-color: white;
-        border-radius: 1rem;
+        border-radius: 0.25rem;
         border-width: 1rem;
         border-color: white;
+    }
+
+    .explainer {
+        font-family: 'argesta_regular', serif;
+        line-height: 1.7;
     }
 
     .generator {

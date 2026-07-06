@@ -52,7 +52,7 @@
 <style>
 
     .generator-layout {
-        padding-top: 6rem;
+        padding-top: 5.5rem;
         display: flex;
         flex-direction: row;
         justify-content: space-around;
@@ -76,18 +76,18 @@
 
         .qr-wrapper {
             position: sticky;
-            top: 5rem;
+            top: 4.5rem;
         }
 
         .controls {
-            background-color: rgba(255, 255, 255, 0.9);
+            background-color: rgba(253, 250, 255, 0.9);
             width: 100vw;
             z-index: 1;
             backdrop-filter: blur(5px);
         }
 
         .controls.dark {
-            background-color: rgba(0, 0, 0, 0.75);
+            background-color: rgba(28, 29, 32, 0.8);
         }
     }
 

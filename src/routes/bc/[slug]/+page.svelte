@@ -170,8 +170,8 @@
     }
 
     .body-text a:hover {
-        border-color: darkorange;
-        color: darkorange;
+        border-color: var(--brand-magenta);
+        color: var(--brand-magenta-strong);
     }
 
     .highlight {
@@ -179,7 +179,7 @@
         font-weight: 500;
         padding: 1rem;
         background-color: hsl(var(--muted));
-        border-left: 3px solid darkorange;
+        border-left: 3px solid var(--brand-magenta);
         border-radius: 4px;
     }
 
@@ -260,8 +260,8 @@
     }
 
     .cta-button.primary:hover {
-        background-color: darkorange;
-        border-color: darkorange;
+        background-color: var(--brand-magenta);
+        border-color: var(--brand-magenta);
         color: hsl(var(--primary-foreground));
         transform: translateY(-2px);
         box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);

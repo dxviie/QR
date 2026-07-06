@@ -7,8 +7,7 @@
     import {Button} from "$lib/components/ui/button";
     import {CircleHelp, Moon, Sun} from "lucide-svelte";
     import Footer from "$lib/components/BrandFooter.svelte";
-    import '@fontsource/bitter';
-    import '@fontsource/poppins';
+    import D17ELogo from "$lib/components/D17ELogo.svelte";
 </script>
 
 <div class="app-container">
@@ -18,9 +17,10 @@
     <header>
       <div class="header-left">
         <a href="/" target="_self" aria-label="link to home" class="header-link">
-          <div class="title"><p class="logo">qr.d17e.dev</p></div>
-          <div><p class="description">Plottable QR Code Generator</p></div>
+          <D17ELogo/>
+          <span class="wordmark">qr.d17e.dev</span>
         </a>
+        <span class="tagline">Plottable QR Code Generator</span>
       </div>
       <div class="header-right">
         <Button on:click={toggleMode} variant="ghost" size="icon">
@@ -59,43 +59,60 @@
 
     header {
         background-color: hsl(var(--background));
+        border-bottom: 1px solid hsl(var(--border));
         width: 100%;
-        height: 6rem;
+        height: 3.5rem;
         position: fixed;
-        padding: 1rem;
+        z-index: 10;
+        padding: 0.4rem 1rem;
         display: flex;
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
         align-self: center;
-        font-size: large;
+        gap: 0.6rem;
     }
 
     .header-left {
         display: flex;
         flex-direction: row;
-        align-items: center;
+        align-items: baseline;
+        gap: 0.6rem;
     }
 
     .header-right {
         height: 2.5rem;
+        display: flex;
+        align-items: center;
     }
 
     .header-link {
         border-bottom-width: 0;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
     }
 
-    .title {
-        padding: 0 .7rem 0 0.6rem;
-        background-color: hsl(var(--foreground));
-        color: hsl(var(--background));
-        font-size: xx-large;
-        font-weight: bold;
+    .header-link:hover {
+        opacity: 0.7;
     }
 
-    .description {
-        font-size: x-small;
-        font-weight: normal;
+    .wordmark {
+        font-family: 'nudica_monobold', monospace;
+        font-size: 1.15rem;
+        letter-spacing: 0.08em;
+    }
+
+    .tagline {
+        font-family: 'argesta_regular', serif;
+        color: hsl(var(--muted-foreground));
+        font-size: 0.8rem;
+    }
+
+    @media (max-width: 640px) {
+        .tagline {
+            display: none;
+        }
     }
 
     main {
@@ -107,35 +124,21 @@
     }
 
     footer {
-        height: 5rem;
         width: 100%;
     }
 
     :global(button) {
-        font-family: Bitter, serif;
-        font-weight: bold !important;
-        font-size: large !important;
+        font-family: 'nudica_monobold', monospace;
+        font-weight: normal !important;
     }
 
     :global(button:hover) {
-        background-color: darkorange !important;
+        background-color: var(--brand-magenta) !important;
+        color: #fdfaff !important;
     }
 
     :global(button:active) {
         transform: translateY(1px);
-    }
-
-    :global(body) {
-        font-family: Poppins, sans-serif;
-        font-size: medium;
-    }
-
-    :global(.title) {
-        font-family: Bitter, serif;
-    }
-
-    :global(.description) {
-        font-family: Poppins, sans-serif;
     }
 
     :global(a) {
@@ -145,7 +148,7 @@
     }
 
     :global(a:hover) {
-        border-color: darkorange;
+        border-color: var(--brand-magenta);
     }
 
 </style>

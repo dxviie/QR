@@ -2,69 +2,100 @@
 @tailwind components;
 @tailwind utilities;
 
+/* d17e.dev brand fonts */
+@font-face {
+  font-family: "nudica_monobold";
+  src: url("/fonts/nudicamono-bold-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "nudica_monolight";
+  src: url("/fonts/nudicamono-light-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "argesta_regular";
+  src: url("/fonts/argestatext-regular-webfont.woff") format("woff");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 20 14.3% 4.1%;
+    /* d17e.dev brand: near-white paper / near-black ink, magenta as the accent */
+    --brand-magenta: #ff3db4;
+    --brand-magenta-strong: #ff2aa6;
+    --brand-cyan: #23d0ff;
+    --brand-yellow: #ffcc33;
 
-    --muted: 60 4.8% 95.9%;
-    --muted-foreground: 25 5.3% 44.7%;
+    --background: 276 100% 99%; /* paper #fdfaff */
+    --foreground: 220 26% 14%; /* ink #1a202c */
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 20 14.3% 4.1%;
+    --muted: 218 31% 95%;
+    --muted-foreground: 222 25% 50%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 20 14.3% 4.1%;
+    --popover: 276 100% 99%;
+    --popover-foreground: 220 26% 14%;
 
-    --border: 20 5.9% 90%;
-    --input: 20 5.9% 90%;
+    --card: 276 100% 99%;
+    --card-foreground: 220 26% 14%;
 
-    --primary: 24 9.8% 10%;
-    --primary-foreground: 60 9.1% 97.8%;
+    --border: 214 13% 90%;
+    --input: 214 13% 90%;
 
-    --secondary: 60 4.8% 95.9%;
-    --secondary-foreground: 24 9.8% 10%;
+    --primary: 220 26% 14%;
+    --primary-foreground: 276 100% 99%;
 
-    --accent: 60 4.8% 95.9%;
-    --accent-foreground: 24 9.8% 10%;
+    --secondary: 218 31% 95%;
+    --secondary-foreground: 220 26% 14%;
+
+    --accent: 218 31% 95%;
+    --accent-foreground: 220 26% 14%;
 
     --destructive: 0 72.2% 50.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
+    --destructive-foreground: 276 100% 99%;
 
-    --ring: 20 14.3% 4.1%;
+    --ring: 323 100% 62%; /* magenta #ff3db4 */
 
-    --radius: 0.5rem;
+    --radius: 0.25rem;
   }
 
   .dark {
-    --background: 20 14.3% 4.1%;
-    --foreground: 60 9.1% 97.8%;
+    --background: 225 7% 12%; /* ink dark #1c1d20 */
+    --foreground: 276 100% 99%;
 
-    --muted: 12 6.5% 15.1%;
-    --muted-foreground: 24 5.4% 63.9%;
+    --muted: 214 13% 20%;
+    --muted-foreground: 221 27% 64%;
 
-    --popover: 20 14.3% 4.1%;
-    --popover-foreground: 60 9.1% 97.8%;
+    --popover: 225 7% 12%;
+    --popover-foreground: 276 100% 99%;
 
-    --card: 20 14.3% 4.1%;
-    --card-foreground: 60 9.1% 97.8%;
+    --card: 225 7% 12%;
+    --card-foreground: 276 100% 99%;
 
-    --border: 12 6.5% 15.1%;
-    --input: 12 6.5% 15.1%;
+    --border: 213 12% 30%;
+    --input: 213 12% 30%;
 
-    --primary: 60 9.1% 97.8%;
-    --primary-foreground: 24 9.8% 10%;
+    --primary: 276 100% 99%;
+    --primary-foreground: 220 26% 14%;
 
-    --secondary: 12 6.5% 15.1%;
-    --secondary-foreground: 60 9.1% 97.8%;
+    --secondary: 214 13% 20%;
+    --secondary-foreground: 276 100% 99%;
 
-    --accent: 12 6.5% 15.1%;
-    --accent-foreground: 60 9.1% 97.8%;
+    --accent: 214 13% 20%;
+    --accent-foreground: 276 100% 99%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 60 9.1% 97.8%;
+    --destructive: 0 62.8% 40%;
+    --destructive-foreground: 276 100% 99%;
 
-    --ring: 24 5.7% 82.9%;
+    --ring: 323 100% 62%;
   }
 }
 
@@ -72,7 +103,24 @@
   * {
     @apply border-border;
   }
+
   body {
     @apply bg-background text-foreground;
+    font-family: "nudica_monolight", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "nudica_monobold", monospace;
+    font-weight: normal;
+  }
+
+  *:focus-visible {
+    outline: var(--brand-magenta-strong) dashed 1px;
   }
 }
