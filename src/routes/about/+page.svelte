@@ -43,7 +43,7 @@
 
 <style>
     .content {
-        padding-top: 8rem;
+        padding-top: 6rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -67,5 +67,8 @@
     .intro {
         width: 90vw;
         max-width: 40rem;
+        font-family: 'argesta_regular', serif;
+        font-size: 1.125rem;
+        line-height: 1.7;
     }
 </style>

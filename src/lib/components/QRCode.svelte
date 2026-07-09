@@ -71,7 +71,7 @@
         max-width: 50rem;
         aspect-ratio: 1;
         background-color: white;
-        border-radius: 1rem;
+        border-radius: 0.25rem;
         border-color: white;
         border-width: 1rem;
     }

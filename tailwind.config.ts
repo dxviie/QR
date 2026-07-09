@@ -55,7 +55,9 @@ const config: Config = {
 				sm: "calc(var(--radius) - 4px)"
 			},
 			fontFamily: {
-				sans: [...fontFamily.sans]
+				sans: ["nudica_monolight", ...fontFamily.sans],
+				mono: ["nudica_monobold", ...fontFamily.mono],
+				serif: ["argesta_regular", ...fontFamily.serif]
 			}
 		}
 	},

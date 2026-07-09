@@ -2,11 +2,11 @@
     const year = new Date().getFullYear();
 </script>
 
-<div class="footer description">
+<div class="footer">
   <div class="footer-content">
     <div class="footer-content__left">
       <div>
-        <p>made with 🧡 by <a href="https://www.d17e.dev" target="_blank">d17e.dev</a></p>
+        <p>made with <span class="heart">♥</span> by <a href="https://www.d17e.dev" target="_blank">D17E</a></p>
         <p><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">© CC BY-NC 4.0</a>{" "}| {year} </p>
       </div>
     </div>
@@ -21,18 +21,25 @@
     a {
         border-style: dashed;
         border-bottom-width: 1px;
-        border-color: hsl(var(--foreground));
+        border-color: hsl(var(--muted-foreground));
     }
 
     a:hover {
-        border-color: darkorange;
+        border-color: var(--brand-magenta);
+        color: var(--brand-magenta-strong);
+    }
+
+    .heart {
+        color: var(--brand-magenta);
     }
 
     .footer {
         display: flex;
         justify-content: center;
         align-items: center;
-        padding: 1rem 0
+        padding: 1rem 0;
+        font-family: 'argesta_regular', serif;
+        color: hsl(var(--muted-foreground));
     }
 
     @media (max-width: 768px) {
@@ -55,7 +62,6 @@
         justify-content: space-between;
         align-items: center;
         width: 100%;
-        /*max-width: 50rem;*/
         padding: 0 20px;
     }
 

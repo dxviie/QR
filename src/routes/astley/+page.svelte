@@ -18,6 +18,7 @@
 
 <style>
     .astley-container {
+        padding-top: 3.5rem;
         display: flex;
         justify-content: center;
         align-items: center;
