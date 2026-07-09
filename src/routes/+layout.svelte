@@ -99,7 +99,8 @@
 
     .wordmark {
         font-family: 'nudica_monobold', monospace;
-        font-size: 1.15rem;
+        font-size: 1.7rem;
+        line-height: 1;
         letter-spacing: 0.08em;
     }
 
