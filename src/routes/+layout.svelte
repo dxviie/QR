@@ -18,9 +18,9 @@
       <div class="header-left">
         <a href="/" target="_self" aria-label="link to home" class="header-link">
           <D17ELogo/>
-          <span class="wordmark">QR.d17e.dev</span>
+          <span class="wordmark">QR</span>
         </a>
-        <span class="tagline">Plottable QR Code Generator</span>
+        <span class="tagline">plottable qr code generator</span>
       </div>
       <div class="header-right">
         <Button on:click={toggleMode} variant="ghost" size="icon">
