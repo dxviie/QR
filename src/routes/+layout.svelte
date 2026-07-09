@@ -76,7 +76,7 @@
     .header-left {
         display: flex;
         flex-direction: row;
-        align-items: baseline;
+        align-items: center;
         gap: 0.6rem;
     }
 
@@ -89,7 +89,7 @@
     .header-link {
         border-bottom-width: 0;
         display: flex;
-        align-items: baseline;
+        align-items: center;
         gap: 0.6rem;
     }
 
