@@ -11,7 +11,7 @@ const directus = createDirectus(DIRECTUS_URL).with(authentication('json')).with(
 let pagesPromise = null;
 
 async function fetchAllPages() {
-	const result = await directus.login(DIRECTUS_LOGIN, DIRECTUS_PASS);
+	const result = await directus.login({ email: DIRECTUS_LOGIN, password: DIRECTUS_PASS });
 	console.debug('Logged in:', result);
 	const pages = await directus.request(
 		readItems('QrPages', {

@@ -24,7 +24,7 @@
     (relatively slow) the same code still only took about ~42 seconds.
   </p>
   <video controls muted>
-    <source src="qr-plot-reel-square.mp4#t=0.1" type={"video/mp4"}/>
+    <source src="qr-plot-reel-square.mp4#t=0.1" type="video/mp4"/>
   </video>
   <p class="intro">
     The <a href="https://github.com/dxviie/QR" target="_blank">source code</a> for this <i>entire</i> project is on my github.<br/><br/>
