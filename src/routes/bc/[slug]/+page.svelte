@@ -55,6 +55,7 @@
     </p>
     <p class="body-text">
       I hope you like it!
+    </p>
   </section>
 
   <section class="cta-section">

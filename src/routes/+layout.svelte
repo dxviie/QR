@@ -5,7 +5,7 @@
     import {ModeWatcher} from "mode-watcher";
     import {toggleMode, mode} from "mode-watcher";
     import {Button} from "$lib/components/ui/button";
-    import {CircleHelp, Moon, Sun} from "lucide-svelte";
+    import {CircleQuestionMark, Moon, Sun} from "lucide-svelte";
     import Footer from "$lib/components/BrandFooter.svelte";
     import D17ELogo from "$lib/components/D17ELogo.svelte";
 </script>
@@ -24,7 +24,7 @@
       </div>
       <div class="header-right">
         <Button on:click={toggleMode} variant="ghost" size="icon">
-          {#if $mode === 'dark'}
+          {#if mode.current === 'dark'}
             <Moon/>
           {:else}
             <Sun/>
@@ -33,7 +33,7 @@
         </Button>
         <a href="/about" target="_self" class="header-link">
           <Button variant="ghost" size="icon">
-            <CircleHelp/>
+            <CircleQuestionMark/>
             <span class="sr-only">Go to about page</span>
           </Button>
         </a>

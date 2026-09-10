@@ -31,11 +31,11 @@
     </Card.Root>
   </div>
 
-  <div class="controls {$mode}">
+  <div class="controls {mode.current}">
     {#if qrOutput.svg}
       <Card.Root>
         <Card.Content>
-          <div class="mt-5"/>
+          <div class="mt-5"></div>
           <QROutput/>
         </Card.Content>
       </Card.Root>
