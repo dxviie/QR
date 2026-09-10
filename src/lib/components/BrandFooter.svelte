@@ -7,7 +7,7 @@
     <div class="footer-content__left">
       <div>
         <p>made with <span class="heart">♥</span> by <a href="https://www.d17e.dev" target="_blank">D17E</a></p>
-        <p><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">© CC BY-NC 4.0</a>{" "}| {year} </p>
+        <p><a href="https://creativecommons.org/licenses/by-nc/4.0/" target="_blank">© CC BY-NC 4.0</a> | {year} </p>
       </div>
     </div>
     <div class="footer-content__right">
