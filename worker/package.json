@@ -1,0 +1,21 @@
+{
+	"name": "qr-code-webhook",
+	"version": "1.0.0",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"dev": "wrangler dev",
+		"deploy": "wrangler deploy",
+		"test": "node --test",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"qrcode-svg": "1.1.0"
+	},
+	"devDependencies": {
+		"@cloudflare/workers-types": "^5.20261112.1",
+		"@types/qrcode-svg": "^1.1.5",
+		"typescript": "^6.0.3",
+		"wrangler": "^4.160.1"
+	}
+}

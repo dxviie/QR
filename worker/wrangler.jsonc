@@ -1,0 +1,13 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "qr-code-webhook",
+	"main": "src/index.ts",
+	"tsconfig": "tsconfig.json",
+	"compatibility_date": "2026-11-01",
+	"observability": {
+		"enabled": true
+	}
+	// Serve it from your own domain instead of (or as well as) *.workers.dev,
+	// once the zone is on Cloudflare:
+	// "routes": [{ "pattern": "qr-api.example.com", "custom_domain": true }]
+}
