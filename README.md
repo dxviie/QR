@@ -91,10 +91,17 @@ npm run dev
 npm test
 ```
 
-[`.github/workflows/worker.yml`](.github/workflows/worker.yml) tests every pull request that touches
-`worker/` and deploys to Cloudflare on every push to `main` that does. It needs two repository secrets:
-`CLOUDFLARE_API_TOKEN` (a token made from the "Edit Cloudflare Workers" template) and
-`CLOUDFLARE_ACCOUNT_ID`.
+Cloudflare's Workers Builds deploys it from this repository: every push to `main` that touches `worker/`
+runs `npm run check` (types and tests) and then `npx wrangler deploy`. Those settings live in the
+Cloudflare dashboard under the Worker's Settings > Build:
+
+| Setting           | Value                                     |
+| ----------------- | ----------------------------------------- |
+| Root directory    | `worker`                                  |
+| Build command     | `npm run check`                           |
+| Deploy command    | `npx wrangler deploy`                     |
+| Build watch paths | include `worker/*`                        |
+| Worker name       | `qr-code-webhook`, as in `wrangler.jsonc` |
 
 ## License
 
