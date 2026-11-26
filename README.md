@@ -66,6 +66,43 @@ npm run preview
 
 To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
 
+## QR Code API (Cloudflare Worker)
+
+`worker/` is a small Cloudflare Worker that returns a plottable QR code as SVG over HTTP. It replaces the
+old Val Town webhook and gives the same output for the same request.
+
+```bash
+curl https://qr-code-webhook.<your-subdomain>.workers.dev -H "Content-Type: application/json" -d '{"value":"https://qr.d17e.dev","ecl":"L","penMmSize":0.5}'
+```
+
+- `value`: the content to encode
+- `ecl`: error correction level, one of `L`, `M`, `Q`, `H`
+- `penMmSize`: pen width in mm; each QR module is one pen width wide
+
+Send all three. A request without a JSON body gets a QR code for `https://qr.d17e.dev` with a 20 mm pen.
+`GET` and `POST` both work, and any origin may call it (CORS `*`).
+
+To run it locally on http://localhost:8787 and run its tests:
+
+```bash
+cd worker
+npm install
+npm run dev
+npm test
+```
+
+Cloudflare's Workers Builds deploys it from this repository: every push to `main` that touches `worker/`
+runs `npm run check` (types and tests) and then `npx wrangler deploy`. Those settings live in the
+Cloudflare dashboard under the Worker's Settings > Build:
+
+| Setting           | Value                                     |
+| ----------------- | ----------------------------------------- |
+| Root directory    | `worker`                                  |
+| Build command     | `npm run check`                           |
+| Deploy command    | `npx wrangler deploy`                     |
+| Build watch paths | include `worker/*`                        |
+| Worker name       | `qr-code-webhook`, as in `wrangler.jsonc` |
+
 ## License
 
 This project is licensed under the MIT License.
